@@ -1,0 +1,970 @@
+{
+  "case": {
+    "slug": "nyewu",
+    "no": "01",
+    "title": "Nyewu",
+    "tagline": "Arsip kabar duka yang belum sampai",
+    "hook": "Ayah saya meninggal empat puluh tujuh tahun lalu. Dia belum tahu.",
+    "author": "Disusun oleh Suwarta, Desa Pakabaran, Nusa Sewu",
+    "status": "live",
+    "sort": 1
+  },
+  "config": {
+    "skins": {
+      "0-01": [
+        "note",
+        "Catatan penyusun",
+        "report"
+      ],
+      "0-02": [
+        "rules",
+        "Petunjuk",
+        "report"
+      ],
+      "I-01": [
+        "newspaper",
+        "Kliping koran",
+        "news"
+      ],
+      "I-02": [
+        "gov",
+        "Laporan resmi",
+        "report"
+      ],
+      "I-03": [
+        "newspaper",
+        "Kliping koran",
+        "news"
+      ],
+      "I-04": [
+        "notulen",
+        "Notulen",
+        "notebook"
+      ],
+      "I-05": [
+        "notulen",
+        "Notulen",
+        "notebook"
+      ],
+      "I-06": [
+        "ledger",
+        "Register KK",
+        "table"
+      ],
+      "I-07": [
+        "photo",
+        "Foto",
+        "photo"
+      ],
+      "I-08": [
+        "map",
+        "Peta tangan",
+        "map"
+      ],
+      "II-01": [
+        "post",
+        "Kantor pos",
+        "letter"
+      ],
+      "II-32": [
+        "logbook",
+        "Buku log",
+        "notebook"
+      ],
+      "II-33": [
+        "gov",
+        "Berita acara",
+        "report"
+      ],
+      "III-01": [
+        "rukmini",
+        "Buku catatan",
+        "notebook"
+      ],
+      "III-02": [
+        "tape",
+        "Kaset C60",
+        "tape"
+      ],
+      "III-03": [
+        "tape-phone",
+        "Rekaman ponsel",
+        "voice"
+      ],
+      "III-04": [
+        "testimony",
+        "Kesaksian",
+        "quote"
+      ],
+      "III-05": [
+        "notulen",
+        "Buku ronda",
+        "notebook"
+      ],
+      "III-06": [
+        "ledger-book",
+        "Buku harian keluarga",
+        "notebook"
+      ],
+      "IV-01": [
+        "gov",
+        "Laporan desa",
+        "report"
+      ],
+      "IV-02": [
+        "newspaper",
+        "Kliping koran",
+        "news"
+      ],
+      "IV-03": [
+        "testimony",
+        "Laporan & kesaksian",
+        "quote"
+      ],
+      "IV-04": [
+        "tape",
+        "Kaset radio amatir",
+        "tape"
+      ],
+      "IV-05": [
+        "register",
+        "Register puskesmas",
+        "table"
+      ],
+      "IV-06": [
+        "testimony",
+        "Laporan · kesaksian · buku bengkel",
+        "quote"
+      ],
+      "IV-07": [
+        "gov",
+        "Laporan pencarian · WhatsApp",
+        "chat"
+      ],
+      "IV-08": [
+        "analysis",
+        "Analisis",
+        "table"
+      ],
+      "IV-09": [
+        "sketch",
+        "Sketsa pensil",
+        "foot"
+      ],
+      "V-01": [
+        "colonial",
+        "Verslag, 1891",
+        "report"
+      ],
+      "V-02": [
+        "thesis",
+        "Catatan kaki",
+        "thesis"
+      ],
+      "V-03": [
+        "colonial",
+        "Surat zendeling",
+        "letter"
+      ],
+      "VI-01": [
+        "cover",
+        "Skripsi",
+        "thesis"
+      ],
+      "VI-02": [
+        "thesis",
+        "Skripsi",
+        "thesis"
+      ],
+      "VI-03": [
+        "thesis",
+        "Skripsi",
+        "thesis"
+      ],
+      "VI-04": [
+        "thesis",
+        "Lampiran",
+        "thesis"
+      ],
+      "VI-05": [
+        "thesis",
+        "Draf tesis",
+        "thesis"
+      ],
+      "VI-06": [
+        "field",
+        "Catatan lapangan",
+        "notebook"
+      ],
+      "VI-06a": [
+        "story",
+        "Cerpen",
+        "report"
+      ],
+      "VI-07": [
+        "tape-phone",
+        "Pesan suara",
+        "voice"
+      ],
+      "VII-01": [
+        "journal",
+        "Jurnal",
+        "notebook"
+      ],
+      "VII-02": [
+        "tape-phone",
+        "Wawancara",
+        "voice"
+      ],
+      "VII-03": [
+        "tape-phone",
+        "Rekaman di perahu",
+        "voice"
+      ],
+      "VII-04": [
+        "web",
+        "Berita daring",
+        "web"
+      ],
+      "VIII-20": [
+        "note",
+        "Catatan",
+        "report"
+      ],
+      "IX-01": [
+        "ritual",
+        "Tata cara",
+        "flame"
+      ],
+      "IX-02": [
+        "ritual",
+        "Tembang",
+        "flame"
+      ],
+      "IX-03": [
+        "tape-phone",
+        "Rekaman terakhir",
+        "voice"
+      ],
+      "IX-04": [
+        "journal",
+        "Jurnal",
+        "notebook"
+      ]
+    },
+    "skinPrefixes": {
+      "II-": [
+        "letter",
+        "Surat · alamat “Laut”",
+        "letter"
+      ],
+      "VIII-": [
+        "stampcard",
+        "Kartu kenal",
+        "card"
+      ]
+    },
+    "tapes": {
+      "III-02": {
+        "style": "cassette",
+        "label": "NIKAHAN WARNI 14-10-78",
+        "brand": "TDK · C60"
+      },
+      "IV-04": {
+        "style": "cassette",
+        "label": "FREK. LAUT · 27-2-03",
+        "brand": "MAXELL · C90"
+      },
+      "III-03": {
+        "style": "phone",
+        "label": "Rekaman · 13 Feb 2014",
+        "length": "14:22"
+      },
+      "VI-07": {
+        "style": "phone",
+        "label": "Pesan suara · Gita",
+        "length": "0:47"
+      },
+      "VII-02": {
+        "style": "phone",
+        "label": "Rekaman · Wonokromo, Mar 2024",
+        "length": ""
+      },
+      "VII-03": {
+        "style": "phone",
+        "label": "Rekaman · di perahu, 6 Jun 2024",
+        "length": ""
+      },
+      "IX-03": {
+        "style": "phone",
+        "label": "Rekaman · 11 Feb 2027 · 22.00",
+        "length": "7:40:00"
+      }
+    },
+    "berkas": {
+      "0": {
+        "years": "2026",
+        "motif": "door",
+        "palette": "night"
+      },
+      "I": {
+        "years": "1979",
+        "motif": "lighthouse",
+        "palette": "sea"
+      },
+      "II": {
+        "years": "1979–2008",
+        "motif": "envelope",
+        "palette": "rust"
+      },
+      "III": {
+        "years": "1979–2021",
+        "motif": "wave",
+        "palette": "slate"
+      },
+      "IV": {
+        "years": "1987–2019",
+        "motif": "footprints",
+        "palette": "sand"
+      },
+      "V": {
+        "years": "1891–1893",
+        "motif": "stone",
+        "palette": "olive"
+      },
+      "VI": {
+        "years": "2016–2019",
+        "motif": "book",
+        "palette": "green"
+      },
+      "VII": {
+        "years": "2022–2026",
+        "motif": "tape",
+        "palette": "plum"
+      },
+      "VIII": {
+        "years": "1979",
+        "motif": "boat",
+        "palette": "ink"
+      },
+      "IX": {
+        "years": "2027",
+        "motif": "key",
+        "palette": "night"
+      }
+    },
+    "kenal": {
+      "VIII-01": [
+        "Kasan",
+        "Sisir hitam",
+        "Sri Mulya"
+      ],
+      "VIII-02": [
+        "Ngadimin",
+        "Siul camar",
+        "Sri Mulya"
+      ],
+      "VIII-03": [
+        "Suroto",
+        "Hitungan kayuh",
+        "Sri Mulya"
+      ],
+      "VIII-04": [
+        "Tarmuji",
+        "Joko di pundak",
+        "Mina Rahayu"
+      ],
+      "VIII-05": [
+        "Jumadi",
+        "Kacang rebus",
+        "Mina Rahayu"
+      ],
+      "VIII-06": [
+        "Slamet Riyadi",
+        "Puisi bungkus rokok",
+        "Lintang Segara"
+      ],
+      "VIII-07": [
+        "Gunadi",
+        "Perahu kayu waru",
+        "Lintang Segara"
+      ],
+      "VIII-08": [
+        "Rusdi",
+        "Kentrung fals",
+        "Lintang Segara"
+      ],
+      "VIII-09": [
+        "Kasiman",
+        "Layangan koran",
+        "Dewi Ratih"
+      ],
+      "VIII-10": [
+        "Ahmad Sholeh",
+        "Azan subuh",
+        "Dewi Ratih"
+      ],
+      "VIII-11": [
+        "Joyo",
+        "Dongeng 1937",
+        "Dewi Ratih"
+      ],
+      "VIII-12": [
+        "Marto",
+        "Timbang tangan",
+        "Sumber Rejeki"
+      ],
+      "VIII-13": [
+        "Wakidi",
+        "Telinga kiri",
+        "Sumber Rejeki"
+      ],
+      "VIII-14": [
+        "Tukimin",
+        "Dua piring",
+        "Kembang Arum"
+      ],
+      "VIII-15": [
+        "Wardi",
+        "Pisang goreng",
+        "Kembang Arum"
+      ],
+      "VIII-16": [
+        "Giyanto",
+        "Duduk di haluan",
+        "Jaka Tirta"
+      ],
+      "VIII-17": [
+        "Kliwon",
+        "Rumpun pandan",
+        "Slamet"
+      ],
+      "VIII-18": [
+        "Ridwan",
+        "Koran bekas",
+        "Wijaya Kusuma"
+      ],
+      "VIII-19": [
+        "Tasrip",
+        "Bambang · Endah",
+        "Wijaya Kusuma"
+      ]
+    },
+    "hints": [
+      "Start dari 41 nama di I-02. Nggak semuanya masih mendayung.",
+      "Di III-01, Mbah Rukmini nyatet siapa yang “noleh nang darat”. Tapi noleh ≠ pergi. Cross-check sama daftar Agustus 1984.",
+      "Pembawa kabar = anak umur 3–6 yang kenal. Hitung tanggal lahir di I-06 terhadap 8 Februari 1979. Cucu, adik, keponakan juga count.",
+      "Sembilan belas itu bukan final answer. Baca VIII-20, lalu balik ke Berkas IV pelan-pelan.",
+      "Yang wafat di ranjangnya, dimandikan, dikubur, sudah tahu. Yang terseret ke laut nggak pernah lihat pemakamannya sendiri.",
+      "Ejaan wajar dan nama panggilan diterima. Tapi ada empat “Jo” di arsip ini."
+    ],
+    "bekal": [
+      [
+        "lampu",
+        "Baca dengan lampu nyala.",
+        "No ghosts involved. Banyak dokumen tulisan tangan; matamu bakal berterima kasih."
+      ],
+      [
+        "kertas",
+        "Siapkan kertas: nama, umur, tanggal lahir anak-anak.",
+        "Warta minta ini di 0-02. Nggak ada kertas? Pakai Board di Desk."
+      ],
+      [
+        "dongeng",
+        "Read it like a fairytale.",
+        "Penyusun arsip serius soal ini. Alasannya ada di tengah arsip."
+      ],
+      [
+        "air",
+        "Kalau nyium bau garam, stop. Minum air.",
+        "Lalu ulangi dalam hati: ini cuma cerita."
+      ]
+    ],
+    "tugas": [
+      [
+        "0-02",
+        "Baca cara membaca arsip"
+      ],
+      [
+        "I-02",
+        "Collect 41 nama dari laporan syahbandar"
+      ],
+      [
+        "I-06",
+        "Catat tanggal lahir anak-anak"
+      ],
+      [
+        "III-01",
+        "Siapa yang noleh, siapa yang masih datang"
+      ],
+      [
+        "V-01",
+        "Temukan origin story pantang kabar"
+      ],
+      [
+        "VI-02",
+        "Pahami lima hukum Gita"
+      ],
+      [
+        "VIII-19",
+        "Kenali mereka sebagai orang hidup"
+      ],
+      [
+        "VIII-20",
+        "Recount."
+      ],
+      [
+        "@sent",
+        "Kirim kabar"
+      ]
+    ],
+    "card": {
+      "goal": "Today’s goal: kenali empat puluh satu nelayan, lalu hitung siapa yang belum pulang.",
+      "audioHint": "Kaset · Okt 1978 — Kasan menyanyi. Full tape ada di III-02.",
+      "countdown": "Windu keenam",
+      "pill": "Read the archive · ±4 hrs"
+    },
+    "finale": {
+      "berkas": "IX",
+      "unlockAfter": "VIII-20",
+      "ritual": "IX-01",
+      "song": "IX-02",
+      "tape": "IX-03",
+      "epilogue": "IX-04",
+      "endingsDoc": "IX-05",
+      "windu": "2027-02-11",
+      "epilogueDate": "2027-02-12",
+      "address": "Laut",
+      "sayLine": "Segara wis nyimpen jenengmu. Wis ya.",
+      "sayTranslation": "Laut sudah menyimpan namamu. Sudah ya."
+    },
+    "endings": {
+      "before": "",
+      "incomplete": "",
+      "after": ""
+    },
+    "replies": {
+      "sampai": "Dia sudah sampai.",
+      "tidur": "Dia sudah tidur.",
+      "tahu": "Dia sudah tahu.",
+      "sini": "Dia masih di sini.",
+      "darat": "Dia masih di darat.",
+      "jo": "Ada empat Jo di arsip ini. Yang mana?",
+      "dup": "Udah ditempel.",
+      "none": "Laut tidak menyimpan nama itu.",
+      "believe": "Kamu tidak bisa lagi mengabari."
+    }
+  },
+  "answers": [
+    {
+      "name": "Kasan",
+      "aliases": [
+        "kasan",
+        "kangkasan",
+        "pakkasan"
+      ],
+      "habit": "Sisir hitam",
+      "question": "Aku wis tekan durung?",
+      "year": 1979
+    },
+    {
+      "name": "Ngadimin",
+      "aliases": [
+        "ngadimin",
+        "din",
+        "adimin",
+        "madin"
+      ],
+      "habit": "Siul camar",
+      "question": "Mak, aku ora telat to?",
+      "year": 1979
+    },
+    {
+      "name": "Suroto",
+      "aliases": [
+        "suroto",
+        "roto",
+        "kangroto"
+      ],
+      "habit": "Hitungan kayuh",
+      "question": "Pitungatus telu, pitungatus papat…",
+      "year": 1979
+    },
+    {
+      "name": "Tarmuji",
+      "aliases": [
+        "tarmuji",
+        "muji"
+      ],
+      "habit": "Joko di pundak",
+      "question": "Joko wis turu durung?",
+      "year": 1979
+    },
+    {
+      "name": "Jumadi",
+      "aliases": [
+        "jumadi",
+        "jum"
+      ],
+      "habit": "Kacang rebus",
+      "question": "Yanto mau pengin melu.",
+      "year": 1979
+    },
+    {
+      "name": "Slamet Riyadi",
+      "aliases": [
+        "slametriyadi",
+        "slamet",
+        "met",
+        "riyadi",
+        "slametriadi"
+      ],
+      "habit": "Puisi bungkus rokok",
+      "question": "(memandangi lampu suar)",
+      "year": 1979
+    },
+    {
+      "name": "Gunadi",
+      "aliases": [
+        "gunadi",
+        "gun"
+      ],
+      "habit": "Perahu kayu waru",
+      "question": "Ratna isih nyimpen praune?",
+      "year": 1979
+    },
+    {
+      "name": "Rusdi",
+      "aliases": [
+        "rusdi",
+        "rus"
+      ],
+      "habit": "Kentrung fals",
+      "question": "Gitarku ojo didol.",
+      "year": 1979
+    },
+    {
+      "name": "Kasiman",
+      "aliases": [
+        "kasiman",
+        "siman"
+      ],
+      "habit": "Layangan koran",
+      "question": "Budi, layangane wis munggah?",
+      "year": 1979
+    },
+    {
+      "name": "Ahmad Sholeh",
+      "aliases": [
+        "ahmadsholeh",
+        "sholeh",
+        "soleh",
+        "ahmadsoleh",
+        "saleh",
+        "ahmadsaleh"
+      ],
+      "habit": "Azan subuh",
+      "question": "Allahu akbar, Allahu akbar…",
+      "year": 1979
+    },
+    {
+      "name": "Joyo",
+      "aliases": [
+        "joyo",
+        "mbahjo",
+        "mbahjoyo",
+        "pakjoyo"
+      ],
+      "habit": "Dongeng 1937",
+      "question": "Iki durung sepira, Le.",
+      "year": 1979
+    },
+    {
+      "name": "Marto",
+      "aliases": [
+        "marto",
+        "kangmarto",
+        "mbahmarto",
+        "pakmarto"
+      ],
+      "habit": "Timbang tangan",
+      "question": "Dewi wis isa ngomong durung?",
+      "year": 1979
+    },
+    {
+      "name": "Wakidi",
+      "aliases": [
+        "wakidi",
+        "kidi"
+      ],
+      "habit": "Telinga kiri",
+      "question": "Aku krungu sing kiwa wae, Mbah.",
+      "year": 1979
+    },
+    {
+      "name": "Tukimin",
+      "aliases": [
+        "tukimin",
+        "kimin",
+        "buto"
+      ],
+      "habit": "Dua piring",
+      "question": "Isih adoh, Kang?",
+      "year": 1979
+    },
+    {
+      "name": "Wardi",
+      "aliases": [
+        "wardi"
+      ],
+      "habit": "Pisang goreng",
+      "question": "Ponijah! Gorengan pisang!",
+      "year": 1979
+    },
+    {
+      "name": "Giyanto",
+      "aliases": [
+        "giyanto",
+        "gi",
+        "sigi",
+        "gianto"
+      ],
+      "habit": "Duduk di haluan",
+      "question": "Mbah Rukmini, aku wedi.",
+      "year": 1979
+    },
+    {
+      "name": "Kliwon",
+      "aliases": [
+        "kliwon"
+      ],
+      "habit": "Rumpun pandan",
+      "question": "Pandane wis dhuwur?",
+      "year": 1979
+    },
+    {
+      "name": "Ridwan",
+      "aliases": [
+        "ridwan",
+        "wan"
+      ],
+      "habit": "Koran bekas",
+      "question": "Ana kabar apa?",
+      "year": 1979
+    },
+    {
+      "name": "Tasrip",
+      "aliases": [
+        "tasrip"
+      ],
+      "habit": "Bambang · Endah",
+      "question": "Bambang, Endah, Bapak bali!",
+      "year": 1979
+    },
+    {
+      "name": "Painah",
+      "aliases": [
+        "painah",
+        "bupainah"
+      ],
+      "habit": "Kerudung merah",
+      "question": "Kang Roto wis cedhak.",
+      "year": 1987
+    },
+    {
+      "name": "Sainah",
+      "aliases": [
+        "sainah",
+        "mboksainah",
+        "mbahsainah"
+      ],
+      "habit": "Biji asam",
+      "question": "Diiin! Mulih, Din, wis surup!",
+      "year": 1995
+    },
+    {
+      "name": "Ponijah",
+      "aliases": [
+        "ponijah",
+        "buponijah"
+      ],
+      "habit": "Gelang akar bahar",
+      "question": "Siji, loro, telu…",
+      "year": 2003
+    },
+    {
+      "name": "Sumarni",
+      "aliases": [
+        "sumarni",
+        "marni"
+      ],
+      "habit": "Tasbih 33 butir",
+      "question": "Alif. Ba. Ta. Tsa…",
+      "year": 2003
+    },
+    {
+      "name": "Rasmi",
+      "aliases": [
+        "rasmi",
+        "burasmi"
+      ],
+      "habit": "Sarung kotak hijau",
+      "question": "(menyiapkan dua gelas teh)",
+      "year": 2011
+    },
+    {
+      "name": "Agus",
+      "aliases": [
+        "agus"
+      ],
+      "habit": "Tangan berminyak",
+      "question": "Kok isa loro-lorone?",
+      "year": 2011
+    },
+    {
+      "name": "Gita Anjani",
+      "aliases": [
+        "gitaanjani",
+        "gita",
+        "anjani",
+        "mbakgita"
+      ],
+      "habit": "Pulpen hijau",
+      "question": "Bu, kok dekat banget lampunya…",
+      "year": 2019
+    }
+  ],
+  "wrong": {
+    "sampai": [
+      "darmaji",
+      "kangji",
+      "ji",
+      "kadir",
+      "wagiman",
+      "mbahwagi",
+      "wagi",
+      "sapari",
+      "pari",
+      "paklikpari",
+      "rohmat",
+      "mat",
+      "paimin",
+      "mulyono",
+      "mul",
+      "sukarman",
+      "karman",
+      "darto",
+      "karyo",
+      "bejo",
+      "josumberrejeki",
+      "sabar",
+      "ponidi",
+      "sanusi",
+      "sunardi",
+      "nardi",
+      "mardi",
+      "rebo",
+      "harjo",
+      "pakjo",
+      "pakjoslamet",
+      "sugeng",
+      "miskun",
+      "samidi",
+      "paijo",
+      "jobojonesumarsih"
+    ],
+    "tidur": [
+      "rukmini",
+      "mbahrukmini",
+      "mbokrukmini"
+    ],
+    "tahu": [
+      "sumi",
+      "busumi",
+      "sumarsih",
+      "ngatini",
+      "sarinem",
+      "painem",
+      "kasmini",
+      "yatmi",
+      "fatimah",
+      "wiryo",
+      "pakwiryo",
+      "wiryosudarmo",
+      "darsono",
+      "pakdarsono",
+      "sastro",
+      "paksastro",
+      "sapuan",
+      "rakijah",
+      "mbokrakijah",
+      "soerodikromo",
+      "vanhaaften",
+      "haaften",
+      "verhoeff",
+      "sukinah",
+      "ginem",
+      "lasmi",
+      "siti",
+      "umi"
+    ],
+    "sini": [
+      "warta",
+      "suwarta",
+      "maswarta"
+    ],
+    "darat": [
+      "rini",
+      "yuli",
+      "budi",
+      "ratna",
+      "endang",
+      "ninik",
+      "yanto",
+      "nining",
+      "hastuti",
+      "ibuhastuti",
+      "joko",
+      "tumi",
+      "bambang",
+      "endah",
+      "lastri",
+      "dewi",
+      "kasih",
+      "edi",
+      "ani",
+      "supri",
+      "ida",
+      "tumirah",
+      "halimah",
+      "wati",
+      "rafa",
+      "gimin",
+      "narti",
+      "parjo",
+      "eko",
+      "dwi",
+      "tri",
+      "lilis",
+      "kustini",
+      "wahyuni",
+      "arif",
+      "anto",
+      "puji",
+      "ponirah",
+      "hartini",
+      "rofiq",
+      "sutinah",
+      "wahyu",
+      "sukidi",
+      "hadi",
+      "pakhadi",
+      "wulandari",
+      "bidanwulandari",
+      "kusno"
+    ],
+    "jo": [
+      "jo"
+    ]
+  }
+}

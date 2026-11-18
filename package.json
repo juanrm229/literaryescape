@@ -2,10 +2,31 @@
   "name": "postmortem",
   "private": true,
   "type": "module",
-  "description": "Perkara-perkara sastra interaktif. Perkara 01: Nyewu.",
   "scripts": {
-    "build": "node scripts/build.mjs",
-    "bundle": "node scripts/build.mjs && node scripts/bundle.mjs",
-    "serve": "node scripts/build.mjs && python3 -m http.server 8080 --directory site"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "db:push": "drizzle-kit push",
+    "db:seed": "tsx scripts/seed.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "better-auth": "^1.7.26",
+    "drizzle-orm": "^0.45.4",
+    "next": "^16.4.6",
+    "pg": "^8.23.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "@types/pg": "^8.23.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "dotenv": "^18.0.10",
+    "drizzle-kit": "^0.31.11",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
   }
 }

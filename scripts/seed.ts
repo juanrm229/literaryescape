@@ -1,0 +1,42 @@
+/**
+ * Seed / re-seed a case from content/<slug>/ (markdown berkas files + case.json).
+ * Usage: npm run db:seed            (seeds every folder in content/)
+ *        npm run db:seed -- nyewu   (one case)
+ * Progress of readers is kept; content, config and answers are replaced.
+ */
+import 'dotenv/config';
+import fs from 'node:fs';
+import path from 'node:path';
+import { eq } from 'drizzle-orm';
+import { db, schema } from '../src/db';
+import { importBerkasMarkdown, replaceAnswers } from '../src/lib/content/import';
+
+const ROOT = path.resolve(import.meta.dirname, '..', 'content');
+
+async function seedCase(slug: string) {
+  const dir = path.join(ROOT, slug);
+  const meta = JSON.parse(fs.readFileSync(path.join(dir, 'case.json'), 'utf8'));
+  const values = { ...meta.case, config: meta.config, updatedAt: new Date() };
+  const [row] = await db.insert(schema.cases).values(values)
+    .onConflictDoUpdate({ target: schema.cases.slug, set: values }).returning();
+  const files = fs.readdirSync(dir).filter((f) => f.endsWith('.md')).sort();
+  for (const f of files) {
+    const r = await importBerkasMarkdown(row.id, fs.readFileSync(path.join(dir, f), 'utf8'));
+    console.log(`  ${slug} · Berkas ${r.berkas} — ${r.title}: ${r.docs} docs`);
+  }
+  if (meta.answers) await replaceAnswers(row.id, meta.answers, meta.wrong || {});
+  console.log(`✓ ${slug}: ${files.length} berkas, ${meta.answers?.length ?? 0} answers`);
+}
+
+async function seedPlaceholders() {
+  for (const [slug, no] of [['case-02', '02'], ['case-03', '03']]) {
+    const exists = await db.select().from(schema.cases).where(eq(schema.cases.slug, slug));
+    if (!exists.length) await db.insert(schema.cases).values({ slug, no, title: `Case ${no}`, status: 'sealed', sort: Number(no), tagline: 'Sealed', config: {} });
+  }
+}
+
+const only = process.argv[2];
+const slugs = only ? [only] : fs.readdirSync(ROOT).filter((d) => fs.existsSync(path.join(ROOT, d, 'case.json')));
+for (const s of slugs) await seedCase(s);
+if (!only) await seedPlaceholders();
+process.exit(0);

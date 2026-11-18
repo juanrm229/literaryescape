@@ -1,0 +1,92 @@
+import Link from 'next/link';
+import { casePage } from '@/lib/case-page';
+import { answerCount, minutes } from '@/lib/game';
+import { skinOf } from '@/lib/case-config';
+import { berkasStamp } from '@/lib/stamps';
+import { inline } from '@/lib/md';
+import { daysUntil, fmt, nextMalamKliwon } from '@/lib/jw';
+import { CaseHeader } from '@/components/CaseHeader';
+import { ScrollTo } from '@/components/ScrollTo';
+import { Ic, Html } from '@/components/ui';
+import { ShellSync } from '@/components/Shell';
+
+export const dynamic = 'force-dynamic';
+
+export default async function Archive({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ from?: string }> }) {
+  const { slug } = await params;
+  const { from } = await searchParams;
+  const { c, p, r } = await casePage(slug);
+  const now = new Date();
+  const days = daysUntil(r.windu, now);
+  const nextK = nextMalamKliwon(now);
+  const finale = c.config.finale;
+  const placedN = p.data.placed.length;
+  const total = await answerCount(c.id);
+
+  return (
+    <div className="page">
+      <ShellSync believe={p.data.believe} />
+      <ScrollTo id={from ? `row-${from}` : undefined} />
+      <CaseHeader c={c} p={p} tab="archive" />
+      <div className="body grow">
+        <div className="meta-strip">
+          <span>{r.readCount}/{r.readable.length} read</span>
+          <span>{r.stampCount}/{c.berkas.length} stamps</span>
+          <span className={days <= 14 ? 'hot' : ''}>windu · {days > 0 ? `${days}d` : days === 0 ? 'tonight' : 'passed'}</span>
+        </div>
+        <p className="kliwon-note">Next malam Jumat Kliwon: {nextK ? fmt(nextK) : '—'}</p>
+
+        {c.berkas.map((b, bi) => {
+          const open = r.berkasUnlocked(b.code);
+          const done = r.berkasDone(b.code);
+          const meta = c.config.berkas[b.code];
+          const head = (
+            <div className="sec-h"><h3>Berkas {b.code} — {b.title}</h3>
+              {done ? <Html as="span" className="sec-stamp" html={berkasStamp(c.config, b)} /> : <span>{meta?.years}</span>}</div>
+          );
+          if (!open) {
+            return (
+              <section className="sec locked" key={b.code}>{head}
+                <p className="lockrow"><Ic name="lock" />{b.code === finale.berkas ? `Locked. Kebuka setelah ${finale.unlockAfter}.` : `Locked. Selesaikan Berkas ${c.berkas[bi - 1].code} dulu.`}</p>
+              </section>
+            );
+          }
+          if (b.code === finale.berkas) {
+            return (
+              <section className="sec" key={b.code}>{head}
+                <Link className="kabar-card" href={`/c/${c.slug}/kabar`}>
+                  <span className="pill">Kirim kabar · {placedN}/{total}</span>
+                  <p>{p.sentAt ? 'Kabar sudah dikirim. Dengarkan rekaman terakhir.' : `Satu amplop beralamat ${finale.address}. Tempel satu stamp untuk setiap yang masih menunggu.`}</p>
+                </Link>
+              </section>
+            );
+          }
+          return (
+            <section className="sec" key={b.code}>{head}
+              {b.intro && b.code !== '0' && <Html as="div" className="sec-intro" html={inline(b.intro.replace(/^\*|\*$/g, ''))} />}
+              <ul className="rows">
+                {r.docsOf(b.code).filter((d) => !d.lock).map((d) => {
+                  const read = !!p.data.read[d.code];
+                  return (
+                    <li key={d.code}>
+                      <Link className={`row${read ? ' read' : ''}`} href={`/c/${c.slug}/d/${d.code}`} id={`row-${d.code}`}>
+                        <span className="box">{read && <Ic name="check" />}</span>
+                        <Html as="span" className="row-t" html={`<b>${d.code}</b>${inline(d.title)}`} />
+                        <span className="row-why">{skinOf(c.config, d.code)[1]} · {minutes(d.words)} min</span>
+                      </Link>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          );
+        })}
+      </div>
+      <div className="bar2">
+        {r.nextUnread
+          ? <Link className="cta" href={`/c/${c.slug}/d/${r.nextUnread.code}`}>{p.data.read['0-01'] ? 'Continue' : 'Start reading'} <small>{r.nextUnread.code}</small></Link>
+          : r.kabarUnlocked ? <Link className="cta yellow" href={`/c/${c.slug}/kabar`}>Kirim kabar</Link> : <span className="cta dim">Archive complete</span>}
+      </div>
+    </div>
+  );
+}
