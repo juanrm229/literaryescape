@@ -1,4 +1,4 @@
-/* Literary Escape — core helpers: crypt, Javanese calendar, storage, small utils */
+/* postmortem — core helpers: crypt, Javanese calendar, storage, small utils */
 window.LE = window.LE || {};
 
 (function (LE) {

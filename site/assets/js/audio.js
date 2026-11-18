@@ -1,4 +1,4 @@
-/* Literary Escape — generated sound: tape hiss, oar strokes (every 4 s), static, sea */
+/* postmortem — generated sound: tape hiss, oar strokes (every 4 s), static, sea */
 (function (LE) {
   let ctx = null, master = null, noiseBuf = null;
   const live = { hiss: null, oars: null, sea: null };

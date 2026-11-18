@@ -56,30 +56,30 @@
   };
 
   const HINTS = [
-    'Mulailah dari empat puluh satu nama di I-02. Tidak semuanya masih mendayung.',
-    'Di III-01, Mbah Rukmini mencatat siapa yang “noleh nang darat”. Tetapi menoleh belum tentu pergi. Bandingkan dengan daftar Agustus 1984.',
-    'Pembawa kabar: anak 3–6 tahun yang mengenal yang hilang. Hitung tanggal lahir di I-06 terhadap 8 Februari 1979. Cucu, adik, dan keponakan ikut dihitung.',
-    'Sembilan belas belum tentu jawaban. Baca VIII-20, lalu kembali ke Berkas IV, pelan-pelan.',
-    'Yang wafat di ranjangnya, yang jasadnya dimandikan dan dikuburkan, sudah tahu. Yang ikut terseret ke laut tidak pernah melihat pemakamannya sendiri.',
-    'Ejaan yang wajar dan nama panggilan diterima. Tapi ada empat “Jo” di arsip ini.',
+    'Start dari 41 nama di I-02. Nggak semuanya masih mendayung.',
+    'Di III-01, Mbah Rukmini nyatet siapa yang “noleh nang darat”. Tapi noleh ≠ pergi. Cross-check sama daftar Agustus 1984.',
+    'Pembawa kabar = anak umur 3–6 yang kenal. Hitung tanggal lahir di I-06 terhadap 8 Februari 1979. Cucu, adik, keponakan juga count.',
+    'Sembilan belas itu bukan final answer. Baca VIII-20, lalu balik ke Berkas IV pelan-pelan.',
+    'Yang wafat di ranjangnya, dimandikan, dikubur, sudah tahu. Yang terseret ke laut nggak pernah lihat pemakamannya sendiri.',
+    'Ejaan wajar dan nama panggilan diterima. Tapi ada empat “Jo” di arsip ini.',
   ];
 
   const BEKAL = [
-    ['lampu', 'Baca dengan lampu menyala.', 'Tidak ada alasan gaib. Banyak dokumen ditulis tangan; mata Anda akan berterima kasih.'],
-    ['kertas', 'Siapkan kertas: nama, umur, tanggal lahir anak-anak.', 'Warta meminta ini di 0-02. Meja Penyidik punya Papan 41 kalau Anda tidak punya kertas.'],
-    ['dongeng', 'Bacalah seperti membaca dongeng.', 'Penyusun arsip bersungguh-sungguh soal ini. Penjelasannya ada di tengah arsip.'],
-    ['air', 'Kalau mencium bau garam, berhenti dan minum air.', 'Lalu ulangi dalam hati: ini cuma cerita.'],
+    ['lampu', 'Baca dengan lampu nyala.', 'No ghosts involved. Banyak dokumen tulisan tangan; matamu bakal berterima kasih.'],
+    ['kertas', 'Siapkan kertas: nama, umur, tanggal lahir anak-anak.', 'Warta minta ini di 0-02. Nggak ada kertas? Pakai Board di Desk.'],
+    ['dongeng', 'Read it like a fairytale.', 'Penyusun arsip serius soal ini. Alasannya ada di tengah arsip.'],
+    ['air', 'Kalau nyium bau garam, stop. Minum air.', 'Lalu ulangi dalam hati: ini cuma cerita.'],
   ];
 
   const TUGAS = [
     ['0-02', 'Baca cara membaca arsip'],
-    ['I-02', 'Kumpulkan 41 nama dari laporan syahbandar'],
-    ['I-06', 'Salin tanggal lahir anak-anak'],
-    ['III-01', 'Catat siapa yang menoleh, siapa yang masih datang'],
-    ['V-01', 'Temukan asal-usul pantang kabar'],
+    ['I-02', 'Collect 41 nama dari laporan syahbandar'],
+    ['I-06', 'Catat tanggal lahir anak-anak'],
+    ['III-01', 'Siapa yang noleh, siapa yang masih datang'],
+    ['V-01', 'Temukan origin story pantang kabar'],
     ['VI-02', 'Pahami lima hukum Gita'],
     ['VIII-19', 'Kenali mereka sebagai orang hidup'],
-    ['VIII-20', 'Hitung ulang'],
+    ['VIII-20', 'Recount.'],
     ['@sent', 'Kirim kabar'],
   ];
 

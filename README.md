@@ -1,6 +1,13 @@
-# literary escape
+# postmortem●
 
-Interactive literary cases (*perkara*): stories told as archives you have to open, read, and solve. Every document is designed to look like the real object it stands for: a newspaper clipping, minutes in a lined book, an envelope you open, a cassette that plays, a WhatsApp screen, an online news page with its comment section.
+**Case files you solve by reading.** Interactive literary cases (*perkara*): every story is an archive you open, read, and solve. Every document is designed to look like the real object it stands for: a newspaper clipping, minutes in a lined book, an envelope you open, a cassette that plays, a WhatsApp screen.
+
+### Why "postmortem"
+- **post**: post, letters, stamps. The world of this series is the *Seksi Surat Mati* (dead letter office): letters addressed to "Laut" (the sea), postmarks, stamps.
+- **mortem**: death. Every case starts from a death that hasn't finished yet.
+- **postmortem**: an autopsy, a review after the fact. That's what the reader does: dissect the archive after it's all over.
+
+The orange dot after the wordmark is the lamp: the lighthouse, the last light the fishermen saw.
 
 ## Case 01 · Nyewu
 
@@ -25,7 +32,7 @@ Interactive literary cases (*perkara*): stories told as archives you have to ope
 ```
 content/nyewu/*.md      archive source (one file per Berkas) — edit here
 scripts/build.mjs       md -> site/data/nyewu.js (splits documents, hashes answers, encrypts IX-03/04)
-scripts/bundle.mjs      site/ -> dist/literary-escape.html (single self-contained file)
+scripts/bundle.mjs      site/ -> dist/postmortem.html (single self-contained file)
 site/                   the site to deploy (static, no framework)
 bible/                  world bible — CONTAINS THE ANSWER KEY, do not deploy
 ```

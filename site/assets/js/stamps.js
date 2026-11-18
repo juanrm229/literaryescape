@@ -1,4 +1,4 @@
-/* Literary Escape — SVG: postage stamps, icons, and drawn exhibits (photo, map, sketch) */
+/* postmortem — SVG: postage stamps, icons, and drawn exhibits (photo, map, sketch) */
 (function (LE) {
   let uid = 0;
   const esc = (s) => LE.esc(s);

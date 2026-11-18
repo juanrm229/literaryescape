@@ -1,4 +1,4 @@
-/* Literary Escape — a small Markdown renderer tuned for archive documents.
+/* postmortem — a small Markdown renderer tuned for archive documents.
    Knows about: bracketed editor notes, stage directions, chat logs, comment threads, tape transcripts. */
 (function (LE) {
   const unesc = (s) => s.replace(/&#91;/g, '[').replace(/\\\[/g, '[').replace(/\\\]/g, ']').replace(/\\_/g, '_').replace(/\\\*/g, '∗');
