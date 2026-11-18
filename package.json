@@ -1,0 +1,11 @@
+{
+  "name": "literary-escape",
+  "private": true,
+  "type": "module",
+  "description": "Perkara-perkara sastra interaktif. Perkara 01: Nyewu.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "bundle": "node scripts/build.mjs && node scripts/bundle.mjs",
+    "serve": "node scripts/build.mjs && python3 -m http.server 8080 --directory site"
+  }
+}
