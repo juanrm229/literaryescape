@@ -460,3 +460,31 @@ body.kliwon .screen::after { content: ''; position: absolute; inset: 0; pointer-
 .an-list code { color: #fff; font-size: 12px; background: none; padding: 0; }
 .an-list b { color: #ddd; }
 .an-raw summary { cursor: pointer; font: 500 12px/1 var(--mono); color: #8d8d89; padding: 8px 0; }
+
+/* ---------- share, install, reading prefs ---------- */
+.pillbtn .icw svg { width: 17px; height: 17px; }
+.pillbtn:disabled { opacity: .6; }
+.al-share { margin: -6px 20px 16px; }
+.me-share { margin-top: 12px; }
+.voices-share { margin-top: 10px; display: flex; justify-content: flex-end; }
+.inst { margin: 4px 0 18px; padding: 0 0 0 20px; font: 500 14px/1.9 var(--sans); }
+.inst-ic { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; background: #eee; font-size: 12px; }
+.rs-wait { opacity: 0; }
+.rs-size { cursor: default; }
+.seg4 { display: flex; gap: 4px; padding: 3px; border-radius: 11px; background: #1a1a1a; }
+.seg4 button { min-width: 38px; height: 32px; border-radius: 8px; color: #8d8d89; font-weight: 700; font-family: var(--sans); }
+.seg4 button.on { background: #f2f2ee; color: #111; }
+.rs-preview { margin: 10px 0 4px; padding: 14px 16px; border-radius: 14px; background: var(--paper); color: var(--ink); font: 400 17.5px/1.55 var(--serif); }
+.toggle input:disabled + .sw { opacity: .35; }
+
+/* text size: scales the paper, not the chrome */
+html[data-ts="s"] :is(.doc, .rs-preview) { zoom: .9; }
+html[data-ts="l"] :is(.doc, .rs-preview) { zoom: 1.12; }
+html[data-ts="xl"] :is(.doc, .rs-preview) { zoom: 1.26; }
+/* dyslexia-friendly: one plain typeface, roomier rhythm, no justified rivers; stamp art keeps its own type */
+html[data-font="legible"] :is(.doc, .rs-preview, .pz) :not(svg, svg *),
+html[data-font="legible"] :is(.doc, .rs-preview) { font-family: 'Atkinson Hyperlegible', system-ui, sans-serif !important; font-style: normal !important; letter-spacing: .01em; word-spacing: .06em; text-align: left !important; hyphens: manual !important; }
+html[data-font="legible"] .doc { line-height: 1.75; }
+/* reduced motion on request (the OS setting is honoured separately) */
+html[data-motion="reduce"] *, html[data-motion="reduce"] *::before, html[data-motion="reduce"] *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+html[data-motion="reduce"] #footprints { display: none; }

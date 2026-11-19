@@ -139,6 +139,8 @@ import { esc } from './esc';
     flame: '<path d="M12 3c3 4 5 6 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 0 2 1 3 2 3 0-3-1-5 1-9z"/>',
     lock: '<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
     check: '<path d="M5 12.5l4.5 4.5L19 7"/>',
+    share: '<path d="M12 3v12M7 8l5-5 5 5M5 13v7h14v-7"/>',
+    install: '<path d="M12 3v12M7 10l5 5 5-5M5 20h14"/>',
     x: '<path d="M6 6l12 12M18 6L6 18"/>',
     back: '<path d="M15 5l-7 7 7 7"/>',
     next: '<path d="M9 5l7 7-7 7"/>',

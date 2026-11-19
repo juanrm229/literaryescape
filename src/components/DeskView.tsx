@@ -9,6 +9,8 @@ import { audio } from '@/lib/audio';
 import { fmt, firstAfterStorm, label, pasaran, addDays } from '@/lib/jw';
 import { updateDesk, resetProgress } from '@/app/actions';
 import { authClient } from '@/lib/auth-client';
+import { ReadingSettings } from './ReadingSettings';
+import { InstallRow } from './Pwa';
 
 type Props = {
   slug: string; sub: string;
@@ -65,6 +67,9 @@ export function DeskView(props: Props) {
             : <><span>Belum masuk<small>Progress terikat ke browser ini.</small></span><Link href={`/login?next=/c/${slug}/desk`}>Sign in</Link></>}
         </div>
         {props.admin && <div className="acct"><span>Admin<small>Kelola case, berkas, dan jawaban.</small></span><Link href="/admin">Open CMS</Link></div>}
+        <h3 className="sub-h">Reading</h3>
+        <ReadingSettings />
+        <InstallRow />
         <h3 className="sub-h">Settings</h3>
         <label className="toggle"><span>Sound<small>Desis kaset, dayung, statis.</small></span><input type="checkbox" checked={!muted} onChange={(e) => { audio.setMuted(!e.target.checked); setMuted(!e.target.checked); }} /><span className="sw" /></label>
         <label className="toggle"><span>Aku percaya ini nyata<small>{props.believe ? 'Kamu bisa lihat mereka. Mereka juga.' : 'Biarkan off.'}</small></span><input type="checkbox" checked={props.believe} onChange={(e) => believe(e.target.checked)} /><span className="sw" /></label>

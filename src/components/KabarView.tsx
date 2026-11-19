@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Ic } from './ui';
 import { useUI } from './Shell';
 import { audio } from '@/lib/audio';
+import { haptic } from '@/lib/haptics';
 import { esc } from '@/lib/esc';
 import { placeName, unplace, recite, tembangNext, sendKabar } from '@/app/actions';
 
@@ -43,12 +44,12 @@ export function KabarView(props: Props) {
     start(async () => {
       const r = await placeName(slug, v);
       if (r.ok) {
-        audio.thud(); setReply({ ok: true, text: `${r.name} — stamped.` });
+        audio.thud(); haptic.stamp(); setReply({ ok: true, text: `${r.name} — stamped.` });
         if (input.current) input.current.value = '';
         router.refresh();
         setJustIdx(placed.length);
       } else {
-        setReply({ ok: false, text: r.message });
+        haptic.wrong(); setReply({ ok: false, text: r.message });
         input.current?.select();
       }
     });
@@ -64,7 +65,7 @@ export function KabarView(props: Props) {
           ? <button className="ghostbtn" onClick={() => start(async () => { await unplace(slug, s.idx); closeSheet(); router.refresh(); })}>Peel off this stamp</button>
           : s.said ? <p className="muted">Sudah diucapkan.</p>
             : <SayButton line={props.sayLine} tr={props.sayTranslation} onSay={async () => {
-              audio.thud();
+              audio.thud(); haptic.tap();
               await recite(slug, s.idx);
               setTimeout(() => { closeSheet(); router.refresh(); }, 1300);
             }} stampSaid={s.htmlSaid} />}
@@ -81,7 +82,7 @@ export function KabarView(props: Props) {
     start(async () => {
       const r = await sendKabar(slug);
       if (!r.ok) { toast('<b>Belum bisa dikirim.</b>'); return; }
-      audio.thud(); setSending(true);
+      audio.thud(); haptic.unlock(); setSending(true);
       setTimeout(() => router.push(`/c/${slug}/rekaman`), 1300);
     });
   };

@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { ShareButton } from './ShareButton';
 
-export type StampItem = { key: string; got: boolean; html: string; name: string; desc: string; href?: string };
+export type StampItem = { key: string; got: boolean; html: string; name: string; desc: string; href?: string; share?: string };
 export type Collection = { key: string; name: string; desc: string; items: StampItem[] };
 
 export function StampsView({ colls, startColl, startKey }: { colls: Collection[]; startColl: string; startKey?: string }) {
@@ -21,7 +22,8 @@ export function StampsView({ colls, startColl, startKey }: { colls: Collection[]
           <div className="al-big" key={feat?.key ?? 'none'} dangerouslySetInnerHTML={{ __html: feat ? feat.html : cur.items[0]?.html ?? '' }} />
           <div className="al-cap"><h2>{cur.name}</h2><p>{got.length} stamp{got.length === 1 ? '' : 's'} · of {cur.items.length}</p></div>
         </div>
-        <p className="al-desc">{feat ? <><b style={{ color: '#fff' }}>{feat.name}</b> — {feat.desc} {feat.href && <a href={feat.href}>Read {feat.key.split(':')[1]}</a>}</> : cur.desc}</p>
+        <p className="al-desc">{feat ? <><b style={{ color: '#fff' }}>{feat.name}</b> — {feat.desc} {feat.href && <a href={feat.href}>Read {feat.key.split(':').pop()}</a>}</> : cur.desc}</p>
+        {feat?.share && <div className="al-share"><ShareButton src={feat.share} label="Share stamp" text={`${feat.name} — postmortem`} /></div>}
         <div className="al-grid">
           {cur.items.map((x) => (
             <button key={x.key} className={`al-item${feat?.key === x.key ? ' on' : ''}`} disabled={!x.got} aria-label={x.name}

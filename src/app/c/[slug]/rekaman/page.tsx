@@ -8,6 +8,7 @@ import { daysUntil } from '@/lib/jw';
 import { Back, SoundButton } from '@/components/ui';
 import { RekamanTape } from '@/components/RekamanTape';
 import { ShellSync } from '@/components/Shell';
+import { ShareButton } from '@/components/ShareButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -38,6 +39,7 @@ export default async function Rekaman({ params }: { params: Promise<{ slug: stri
       <div className="doc-body grow">
         <RekamanTape slug={slug} code={f.tape} html={tapeHTML(c.config, f.tape, tapeMd)} />
         <div className="voices-big"><b>{voices.toLocaleString('id-ID')}</b> pembaca sudah mengirim kabar. Kasan bilang: “saben bengi tambah akeh. Kaya banyu pasang.”</div>
+        <div className="voices-share"><ShareButton src={`/api/share/${slug}?k=sent`} label="Share tanpa spoiler" text={`Kabar sudah sampai. ${c.title} — postmortem`} /></div>
         <article className={`doc ${r.epilogueOpen ? 'skin-journal' : 'skin-blank'}`} style={{ marginTop: 12 }} dangerouslySetInnerHTML={{ __html: last }} />
       </div>
       <div className="bar2"><Link className="cta" href={`/c/${slug}`}>Back to archive</Link></div>

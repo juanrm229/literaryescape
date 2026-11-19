@@ -4,6 +4,8 @@ import { createContext, useCallback, useContext, useEffect, useRef, useState } f
 import { usePathname } from 'next/navigation';
 import { isMalamJumatKliwon } from '@/lib/jw';
 import { audio } from '@/lib/audio';
+import { haptic } from '@/lib/haptics';
+import { PwaBoot } from './Pwa';
 
 type Toast = { id: number; html: string; stamp?: string; leaving?: boolean };
 type SheetState = { node: React.ReactNode; cls?: string; open: boolean } | null;
@@ -55,6 +57,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
   }, [pathname]);
 
   useEffect(() => { document.body.classList.toggle('believe', believe); }, [believe]);
+  useEffect(() => { audio.onStroke = haptic.oar; return () => { audio.onStroke = null; }; }, []);
 
   useEffect(() => {
     const forced = new URLSearchParams(location.search).get('kliwon') === '1';
@@ -74,6 +77,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
 
   return (
     <Ctx.Provider value={{ toast, sheet, closeSheet, setBelieve, setLocked, scroller }}>
+      <PwaBoot />
       <div className={`scroller${locked ? ' locked' : ''}`} ref={scroller}>{children}</div>
       <div id="footprints" aria-hidden="true">
         {believe && Array.from({ length: 14 }, (_, i) => (

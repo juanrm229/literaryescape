@@ -3,6 +3,9 @@ import { getViewer } from '@/lib/game';
 import { buildProfile } from '@/lib/profile';
 import { Back, Ic } from '@/components/ui';
 import { StampsView, type Collection } from '@/components/StampsView';
+import { ShareButton } from '@/components/ShareButton';
+import { ReadingSettings } from '@/components/ReadingSettings';
+import { InstallRow } from '@/components/Pwa';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,7 +15,7 @@ export default async function Me() {
   const name = v.user?.name && v.user.name !== v.user.email ? v.user.name : v.user?.email?.split('@')[0] ?? 'Pembaca tanpa nama';
   const colls: Collection[] = pr.cases.filter((c) => c.stamps.length).map((c) => ({
     key: c.slug, name: c.title, desc: `${c.stamps.length} stamp dari ${c.title}`,
-    items: c.stamps.map((s) => ({ key: s.key, got: true, html: s.html, name: s.name, desc: s.desc })),
+    items: c.stamps.map((s) => ({ key: s.key, got: true, html: s.html, name: s.name, desc: s.desc, share: s.key.includes(':x:') ? undefined : `/api/share/${c.slug}?k=${encodeURIComponent(s.key.slice(c.slug.length + 1))}` })),
   }));
   return (
     <div className="page">
@@ -27,6 +30,7 @@ export default async function Me() {
           <p>{pr.rank.line}</p>
           <div className="me-bar"><i style={{ width: `${Math.round(pr.progressToNext * 100)}%` }} /></div>
           <small>{pr.next ? `${(pr.next.min - pr.points).toLocaleString('id-ID')} poin lagi menuju ${pr.next.name}` : 'Peringkat tertinggi.'}</small>
+          <div className="me-share"><ShareButton src="/api/share/me?k=rank" label="Share peringkat" text={`Aku ${pr.rank.name} di postmortem.`} /></div>
         </div>
       </header>
       <div className="body grow">
@@ -50,6 +54,10 @@ export default async function Me() {
             <span className="row-why">{c.accepted ? `${c.read}/${c.total} dibaca · ${c.stamps.length} stamps${c.sent ? ' · kabar terkirim' : ''}` : 'Belum diambil'}</span>
           </Link></li>))}
         </ul>
+
+        <h3 className="sub-h">Reading</h3>
+        <ReadingSettings />
+        <InstallRow />
 
         <h3 className="sub-h">Buku Perangko</h3>
         {!colls.length && <p className="desk-note">Belum ada stamp. Selesaikan satu berkas untuk cap pertama.</p>}

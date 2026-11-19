@@ -18,7 +18,8 @@ export default async function Stamps({ params }: { params: Promise<{ slug: strin
       items: c.berkas.map((b) => {
         const got = r.berkasDone(b.code) && (b.code === cfg.finale.berkas || !!p.data.stamps[b.code]);
         return { key: 'b:' + b.code, got, html: (got ? berkasStamp(cfg, b) : blankStamp(b.code)) as string, name: `Berkas ${b.code} · ${b.title}`,
-          desc: got ? (b.code === cfg.finale.berkas ? 'Dicap waktu kabar dikirim.' : `Dicap ${fmt(new Date(p.data.stamps[b.code]))}.`) : 'Belum dicap.' };
+          desc: got ? (b.code === cfg.finale.berkas ? 'Dicap waktu kabar dikirim.' : `Dicap ${fmt(new Date(p.data.stamps[b.code]))}.`) : 'Belum dicap.',
+          share: !got ? undefined : b.code === cfg.finale.berkas ? (p.sentAt ? `/api/share/${slug}?k=sent` : undefined) : p.data.stamps[b.code] ? `/api/share/${slug}?k=b:${encodeURIComponent(b.code)}` : undefined };
       }),
     },
     {
@@ -26,7 +27,7 @@ export default async function Stamps({ params }: { params: Promise<{ slug: strin
       items: Object.keys(cfg.kenal).map((code, i) => {
         const got = !!p.data.kenal[code];
         const [name, habit, boat] = cfg.kenal[code];
-        return { key: 'k:' + code, got, html: (got ? kenalStamp(cfg, code) : blankStamp(String(i + 1))) as string, name: got ? name : '—', desc: got ? `${habit} · ${boat}.` : 'Kartu kenal belum dibaca.', href: got ? `/c/${slug}/d/${code}` : undefined };
+        return { key: 'k:' + code, got, html: (got ? kenalStamp(cfg, code) : blankStamp(String(i + 1))) as string, name: got ? name : '—', desc: got ? `${habit} · ${boat}.` : 'Kartu kenal belum dibaca.', href: got ? `/c/${slug}/d/${code}` : undefined, share: got ? `/api/share/${slug}?k=k:${encodeURIComponent(code)}` : undefined };
       }),
     },
   ];

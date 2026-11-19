@@ -63,7 +63,12 @@
     if (!boot() || live.oars) return;
     let next = ctx.currentTime + 0.3;
     const tick = () => {
-      while (next < ctx.currentTime + 1.5) { stroke(next, vol); next += 4; }
+      while (next < ctx.currentTime + 1.5) {
+        stroke(next, vol);
+        // felt, not only heard: foreground oars pulse the phone in time with each stroke
+        if (vol >= 0.2 && audio.onStroke) setTimeout(audio.onStroke, Math.max(0, (next - ctx.currentTime) * 1000));
+        next += 4;
+      }
     };
     tick();
     live.oars = setInterval(tick, 500);
@@ -128,6 +133,7 @@
 
   export const audio = {
     setStatic, stopStatic, tone,
+    onStroke: null as null | (() => void),
     boot, startHiss, stopHiss, startOars, stopOars, burstStatic, startSea, stopSea, thud,
     stopAll() { stopHiss(); stopOars(); stopSea(); },
     get muted() { return muted; },

@@ -7,6 +7,7 @@ import type { PuzzleView } from '@/lib/puzzles';
 import { useUI } from './Shell';
 import { useTape } from './useTape';
 import { audio } from '@/lib/audio';
+import { haptic } from '@/lib/haptics';
 import { esc } from '@/lib/esc';
 import { markRead, setOpened } from '@/app/actions';
 
@@ -33,6 +34,7 @@ export function DocReader({ slug, code, skin, html, fresh, onTapeEnd, puzzles = 
       if (!alive) return;
       awards.forEach((a, i) => setTimeout(() => {
         if (a.kind === 'berkas') audio.thud();
+        haptic.stamp();
         toast(a.kind === 'berkas' ? `<small>New stamp</small><b>${esc(a.title)}</b>` : `<small>Kartu kenal</small><b>${esc(a.title)}</b> masuk ke Stamps.`, { stamp: a.svg, ms: a.kind === 'berkas' ? 4400 : 2800 });
       }, 800 + i * 900));
     });
