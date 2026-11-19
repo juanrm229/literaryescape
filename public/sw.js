@@ -1,5 +1,5 @@
 /* postmortem service worker — app shell + static assets offline, pages network-first. */
-const VERSION = 'pm-v1';
+const VERSION = 'pm-v2';
 const SHELL = ['/offline', '/pwa-icon/192', '/manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {
