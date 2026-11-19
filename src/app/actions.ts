@@ -8,9 +8,8 @@ import { berkasStamp, kenalStamp } from '@/lib/stamps';
 import { nameCandidates, tembangStanzas } from '@/lib/text';
 
 async function ctx(slug: string) {
-  const v = await getViewer();
+  const [v, c] = await Promise.all([getViewer(), loadCase(slug)]);
   if (!v.readerId) throw new Error('No reader cookie');
-  const c = await loadCase(slug);
   if (!c) throw new Error('Case not found');
   const p = await loadProgress(v.readerId, c.id);
   return { rid: v.readerId, c, p, r: rules(c, p) };
@@ -115,14 +114,16 @@ export async function recite(slug: string, idx: number) {
   return { ok: true };
 }
 
-export async function tembangNext(slug: string) {
+/** Idempotent: sets the reader's tembang progress to `line` (never backwards, never past the end). */
+export async function tembangNext(slug: string, line?: number) {
   const { rid, c, p } = await ctx(slug);
   const total = await totalAnswers(c.id);
   if (p.data.placed.length !== total || p.data.recited.length !== total) return { ok: false };
   const md = (await loadDocMd(c.id, c.config.finale.song)) ?? '';
   const lines = tembangStanzas(md).reduce((n, s) => n + s.lines.length, 0);
-  await saveProgress(rid, c.id, { data: { ...p.data, tembangLine: Math.min(lines, p.data.tembangLine + 1) } });
-  return { ok: true, done: p.data.tembangLine + 1 >= lines };
+  const target = Math.min(lines, Math.max(p.data.tembangLine, typeof line === 'number' ? Math.floor(line) : p.data.tembangLine + 1));
+  await saveProgress(rid, c.id, { data: { ...p.data, tembangLine: target } });
+  return { ok: true, done: target >= lines };
 }
 
 export type SendResult = { ok: true; count: number } | { ok: false; reason: 'incomplete' | 'recite' | 'tembang' | 'believe' };

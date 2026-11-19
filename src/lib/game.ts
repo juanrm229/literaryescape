@@ -63,13 +63,17 @@ async function mergeProgress(fromReader: string, intoReader: string) {
 export const getViewer = cache(async (): Promise<Viewer> => {
   const jar = await cookies();
   const cookieId = jar.get('pm_reader')?.value ?? null;
+  // no session cookie → anonymous, zero DB round trips
+  if (!jar.getAll().some((c) => c.name.includes('better-auth.session_token'))) return { readerId: cookieId, user: null, admin: false };
   const session = await getSession().catch(() => null);
   if (!session?.user) return { readerId: cookieId, user: null, admin: false };
 
   const u = { id: session.user.id, email: session.user.email, name: session.user.name };
   const admin = isAdminEmail(u.email);
-  const [mine] = await db.select().from(schema.readers).where(eq(schema.readers.userId, u.id));
-  const [anon] = cookieId ? await db.select().from(schema.readers).where(eq(schema.readers.id, cookieId)) : [];
+  const [[mine], [anon]] = await Promise.all([
+    db.select().from(schema.readers).where(eq(schema.readers.userId, u.id)),
+    cookieId ? db.select().from(schema.readers).where(eq(schema.readers.id, cookieId)) : Promise.resolve([] as (typeof schema.readers.$inferSelect)[]),
+  ]);
 
   if (mine) {
     if (anon && !anon.userId && anon.id !== mine.id) await mergeProgress(anon.id, mine.id);
@@ -99,25 +103,41 @@ export type CaseBundle = {
   docs: DocMeta[];
 };
 
-export const listCases = cache(async () =>
-  db.select({ id: schema.cases.id, slug: schema.cases.slug, no: schema.cases.no, title: schema.cases.title, tagline: schema.cases.tagline, hook: schema.cases.hook, status: schema.cases.status, config: schema.cases.config })
-    .from(schema.cases).where(sql`${schema.cases.status} <> 'draft'`).orderBy(asc(schema.cases.sort)));
+/* Content changes only through /admin or a deploy, so keep it in memory for a minute per server
+   instance instead of asking the database on every tap. Admin writes call clearContentCache(). */
+const g = globalThis as unknown as { pmMemo?: Map<string, { at: number; v: Promise<unknown> }> };
+const memoStore = (g.pmMemo ??= new Map());
+const TTL = 60_000;
+function memo<T>(key: string, fn: () => Promise<T>): Promise<T> {
+  const hit = memoStore.get(key);
+  if (hit && Date.now() - hit.at < TTL) return hit.v as Promise<T>;
+  const v = fn().catch((e) => { memoStore.delete(key); throw e; });
+  memoStore.set(key, { at: Date.now(), v });
+  return v;
+}
+export function clearContentCache() { memoStore.clear(); }
 
-export const loadCase = cache(async (slug: string): Promise<CaseBundle | null> => {
+export const listCases = cache(async () => memo('cases', () =>
+  db.select({ id: schema.cases.id, slug: schema.cases.slug, no: schema.cases.no, title: schema.cases.title, tagline: schema.cases.tagline, hook: schema.cases.hook, status: schema.cases.status, config: schema.cases.config })
+    .from(schema.cases).where(sql`${schema.cases.status} <> 'draft'`).orderBy(asc(schema.cases.sort))));
+
+export const loadCase = cache((slug: string): Promise<CaseBundle | null> => memo('case:' + slug, async () => {
   const [c] = await db.select().from(schema.cases).where(eq(schema.cases.slug, slug));
   if (!c || c.status !== 'live') return null;
-  const b = await db.select({ code: schema.berkas.code, title: schema.berkas.title, intro: schema.berkas.intro, sort: schema.berkas.sort })
-    .from(schema.berkas).where(eq(schema.berkas.caseId, c.id)).orderBy(asc(schema.berkas.sort));
-  const docs = await db.select({
+  const [b, docs] = await Promise.all([db.select({ code: schema.berkas.code, title: schema.berkas.title, intro: schema.berkas.intro, sort: schema.berkas.sort })
+    .from(schema.berkas).where(eq(schema.berkas.caseId, c.id)).orderBy(asc(schema.berkas.sort)),
+  db.select({
     code: schema.documents.code, title: schema.documents.title, berkasCode: schema.documents.berkasCode, sort: schema.documents.sort, lock: schema.documents.lock,
     words: sql<number>`coalesce(array_length(regexp_split_to_array(${schema.documents.md}, '\\s+'), 1), 0)`,
-  }).from(schema.documents).where(eq(schema.documents.caseId, c.id)).orderBy(asc(schema.documents.sort));
+  }).from(schema.documents).where(eq(schema.documents.caseId, c.id)).orderBy(asc(schema.documents.sort))]);
   return { ...c, config: c.config as unknown as CaseConfig, berkas: b, docs };
-});
+}));
 
-export async function loadDocMd(caseId: number, code: string) {
-  const [d] = await db.select({ md: schema.documents.md }).from(schema.documents).where(and(eq(schema.documents.caseId, caseId), eq(schema.documents.code, code)));
-  return d?.md ?? null;
+export function loadDocMd(caseId: number, code: string) {
+  return memo(`md:${caseId}:${code}`, async () => {
+    const [d] = await db.select({ md: schema.documents.md }).from(schema.documents).where(and(eq(schema.documents.caseId, caseId), eq(schema.documents.code, code)));
+    return d?.md ?? null;
+  });
 }
 
 export async function loadProgress(readerId: string | null, caseId: number) {
@@ -129,7 +149,13 @@ export async function loadProgress(readerId: string | null, caseId: number) {
 export type Progress = Awaited<ReturnType<typeof loadProgress>>;
 
 export async function saveProgress(readerId: string, caseId: number, patch: { data?: ProgressData; acceptedAt?: Date; sentAt?: Date }) {
-  await ensureReader(readerId);
+  try { await upsertProgress(readerId, caseId, patch); } catch {
+    // first write of a brand-new reader: create the reader row, then retry
+    await ensureReader(readerId);
+    await upsertProgress(readerId, caseId, patch);
+  }
+}
+async function upsertProgress(readerId: string, caseId: number, patch: { data?: ProgressData; acceptedAt?: Date; sentAt?: Date }) {
   const now = new Date();
   await db.insert(schema.progress).values({ readerId, caseId, data: patch.data ?? emptyProgress(), acceptedAt: patch.acceptedAt, sentAt: patch.sentAt, updatedAt: now })
     .onConflictDoUpdate({
@@ -179,10 +205,10 @@ export async function placedPeople(caseId: number, idxs: number[]): Promise<Pers
 }
 
 
-export const answerCount = cache(async (caseId: number) => {
+export const answerCount = cache((caseId: number) => memo('answers:' + caseId, async () => {
   const [r] = await db.select({ n: sql<number>`count(*)::int` }).from(schema.answers).where(eq(schema.answers.caseId, caseId));
   return r?.n ?? 0;
-});
+}));
 
 export const minutes = (words: number) => Math.max(1, Math.round(words / 200));
 export { isAdminEmail };

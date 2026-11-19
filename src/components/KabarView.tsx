@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState, useTransition } from 'react';
+import { useEffect, useRef, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { Ic } from './ui';
 import { useUI } from './Shell';
@@ -25,17 +25,21 @@ export function KabarView(props: Props) {
   const [justIdx, setJustIdx] = useState<number | null>(null);
   const [sending, setSending] = useState(false);
   const input = useRef<HTMLInputElement>(null);
+  // optimistic tembang progress: the line lights up on tap, the server catches up
+  const [line, setLine] = useState(props.tembangLine);
+  useEffect(() => { setLine((l) => Math.max(l, props.tembangLine)); }, [props.tembangLine]);
 
   const full = placed.length === total;
   const said = placed.filter((x) => x.said).length;
   const lineCount = stanzas.reduce((n, s) => n + s.lines.length, 0);
-  const tembangDone = props.tembangLine >= lineCount;
+  const tembangDone = line >= lineCount;
   const step = !full ? 1 : said < total ? 2 : !tembangDone ? 3 : 4;
   const ready = step === 4 && !props.sent;
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     const v = input.current?.value.trim(); if (!v) return;
+    setReply({ ok: true, text: 'Checking…' });
     start(async () => {
       const r = await placeName(slug, v);
       if (r.ok) {
@@ -107,7 +111,7 @@ export function KabarView(props: Props) {
             <>
               <form className="field" onSubmit={submit}>
                 <input ref={input} name="n" placeholder="Tulis satu nama…" autoComplete="off" autoCapitalize="words" disabled={props.believe} />
-                <button className="go" disabled={pending}>Tempel</button>
+                <button className="go" disabled={pending}>{pending ? '…' : 'Tempel'}</button>
               </form>
               <div className={`reply${reply?.ok ? ' ok' : ''}`} aria-live="polite">{reply && (reply.ok ? reply.text : <span className="rubber" key={reply.text + Math.random()}>{reply.text}</span>)}</div>
               <p className="count"><b>{placed.length}</b>/{total} stamped · tap a stamp to peel it off</p>
@@ -118,11 +122,11 @@ export function KabarView(props: Props) {
             <div className="tembang"><h3>Tembang Bocah Pesisir</h3>
               {stanzas.map((s, si) => (
                 <div className="stanza" key={si}>
-                  {s.lines.map((l, k) => { const on = li++ < props.tembangLine; return <p key={k} className={`tl-line${on ? ' on' : ''}`}>{l}</p>; })}
-                  {li <= props.tembangLine && <p className="tl-tr">{s.tr}</p>}
+                  {s.lines.map((l, k) => { const on = li++ < line; return <p key={k} className={`tl-line${on ? ' on' : ''}`}>{l}</p>; })}
+                  {li <= line && <p className="tl-tr">{s.tr}</p>}
                 </div>
               ))}
-              {step === 3 && <button className="cta" disabled={pending} onClick={() => start(async () => { await tembangNext(slug); router.refresh(); })}>{props.tembangLine === 0 ? 'Start reading' : 'Next line'}</button>}
+              {step === 3 && <button className="cta" onClick={() => { const n = line + 1; setLine(n); start(async () => { await tembangNext(slug, n); router.refresh(); }); }}>{line === 0 ? 'Start reading' : 'Next line'}</button>}
             </div>
           )}
           {props.believe && <div className="block-msg"><Ic name="eye" /><b>{props.believeMsg}</b></div>}

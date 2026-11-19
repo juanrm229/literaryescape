@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { eq } from 'drizzle-orm';
 import { db, schema } from '@/db';
-import { getViewer } from '@/lib/game';
+import { clearContentCache, getViewer } from '@/lib/game';
 import { importBerkasMarkdown, replaceAnswers, type AnswerInput } from '@/lib/content/import';
 import type { CaseStatus } from '@/db/schema';
 
@@ -18,7 +18,7 @@ async function caseId(slug: string) {
   if (!c) throw new Error('Case not found');
   return c.id;
 }
-const done = (msg: string, ...paths: string[]): FormState => { paths.forEach((p) => revalidatePath(p)); revalidatePath('/'); return { ok: true, msg }; };
+const done = (msg: string, ...paths: string[]): FormState => { clearContentCache(); paths.forEach((p) => revalidatePath(p)); revalidatePath('/'); return { ok: true, msg }; };
 const fail = (e: unknown): FormState => ({ ok: false, msg: e instanceof Error ? e.message : String(e) });
 
 export async function createCase(_: FormState, fd: FormData): Promise<FormState> {

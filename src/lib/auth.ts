@@ -45,6 +45,8 @@ export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
   baseURL: process.env.BETTER_AUTH_URL,
   socialProviders: google,
+  // signed session snapshot in a cookie: most requests skip the session table entirely
+  session: { cookieCache: { enabled: true, maxAge: 5 * 60 } },
   plugins: [
     magicLink({ expiresIn: 600, sendMagicLink: async ({ email, url }) => sendEmail(email, url) }),
     nextCookies(),
