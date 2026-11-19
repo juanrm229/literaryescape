@@ -67,3 +67,28 @@ export async function replaceAnswers(caseId: number, list: AnswerInput[], wrong:
   });
   return { answers: list.length };
 }
+
+export type PuzzleInput = { key: string; kind: string; title?: string; prompt?: string; config?: Record<string, unknown>; solution: Record<string, unknown>; reward?: Record<string, unknown> };
+const PUZZLE_KINDS = ['text', 'cipher', 'padlock', 'date', 'order', 'match', 'hotspot', 'frequency'];
+
+/** Replace every puzzle of a case. Solutions are stored server-side only. */
+export async function replacePuzzles(caseId: number, list: PuzzleInput[]) {
+  const keys = new Set<string>();
+  for (const p of list) {
+    if (!p.key || !/^[\w-]+$/.test(p.key)) throw new Error(`Puzzle key tidak valid: ${p.key}`);
+    if (keys.has(p.key)) throw new Error(`Puzzle key dobel: ${p.key}`);
+    keys.add(p.key);
+    if (!PUZZLE_KINDS.includes(p.kind)) throw new Error(`Jenis puzzle "${p.kind}" tidak dikenal (${PUZZLE_KINDS.join(', ')})`);
+    if (!p.solution || typeof p.solution !== 'object') throw new Error(`Puzzle ${p.key} butuh "solution"`);
+  }
+  await db.transaction(async (tx) => {
+    await tx.delete(schema.puzzles).where(eq(schema.puzzles.caseId, caseId));
+    if (list.length) {
+      await tx.insert(schema.puzzles).values(list.map((p, i) => ({
+        caseId, key: p.key, kind: p.kind, title: p.title ?? '', prompt: p.prompt ?? '',
+        config: p.config ?? {}, solution: p.solution, reward: p.reward ?? {}, sort: i,
+      })));
+    }
+  });
+  return { puzzles: list.length };
+}

@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { eq } from 'drizzle-orm';
 import { db, schema } from '@/db';
 import { clearContentCache, getViewer } from '@/lib/game';
-import { importBerkasMarkdown, replaceAnswers, type AnswerInput } from '@/lib/content/import';
+import { importBerkasMarkdown, replaceAnswers, replacePuzzles, type AnswerInput, type PuzzleInput } from '@/lib/content/import';
 import type { CaseStatus } from '@/db/schema';
 
 export type FormState = { ok?: boolean; msg?: string } | null;
@@ -90,5 +90,16 @@ export async function deleteCase(slug: string, _: FormState, fd: FormData): Prom
     if (String(fd.get('confirm')) !== slug) throw new Error(`Ketik "${slug}" untuk konfirmasi`);
     await db.delete(schema.cases).where(eq(schema.cases.slug, slug));
     return done('Case dihapus.', '/admin');
+  } catch (e) { return fail(e); }
+}
+
+export async function savePuzzles(slug: string, _: FormState, fd: FormData): Promise<FormState> {
+  try {
+    await requireAdmin();
+    const id = await caseId(slug);
+    const list = JSON.parse(String(fd.get('puzzles') || '[]')) as PuzzleInput[];
+    if (!Array.isArray(list)) throw new Error('Butuh array puzzle: [ { "key", "kind", "title", "prompt", "config", "solution", "reward" } ]');
+    const r = await replacePuzzles(id, list);
+    return done(`${r.puzzles} puzzle tersimpan.`, `/admin/${slug}`, `/c/${slug}`);
   } catch (e) { return fail(e); }
 }

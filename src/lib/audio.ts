@@ -105,7 +105,29 @@
     src.connect(ng).connect(master); src.start(t); src.stop(t + 0.1);
   }
 
+  // continuous radio static whose level can be changed (frequency locks)
+  let radio = null;
+  function setStatic(level) {
+    if (!boot()) return;
+    if (!radio) {
+      const src = noise();
+      const bp = ctx.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1600; bp.Q.value = 0.4;
+      const g = ctx.createGain(); g.gain.value = 0;
+      src.connect(bp).connect(g).connect(master); src.start();
+      radio = { src, g };
+    }
+    radio.g.gain.setTargetAtTime(Math.max(0, Math.min(0.25, level)), ctx.currentTime, 0.08);
+  }
+  function stopStatic() { if (!radio) return; try { radio.src.stop(); } catch (e) { /* */ } radio = null; }
+  function tone(freq = 440, dur = 0.12, vol = 0.12) {
+    if (!boot()) return;
+    const t = ctx.currentTime, o = ctx.createOscillator(), g = ctx.createGain();
+    o.frequency.value = freq; g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g).connect(master); o.start(t); o.stop(t + dur + 0.02);
+  }
+
   export const audio = {
+    setStatic, stopStatic, tone,
     boot, startHiss, stopHiss, startOars, stopOars, burstStatic, startSea, stopSea, thud,
     stopAll() { stopHiss(); stopOars(); stopSea(); },
     get muted() { return muted; },

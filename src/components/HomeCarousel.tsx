@@ -15,7 +15,7 @@ export type Slide =
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
-export function HomeCarousel({ slides, start, signedIn }: { slides: Slide[]; start: number; signedIn: boolean }) {
+export function HomeCarousel({ slides, start, signedIn, meInitial = "?" }: { slides: Slide[]; start: number; signedIn: boolean; meInitial?: string }) {
   const car = useRef<HTMLDivElement>(null);
   const [idx, setIdx] = useState(start);
   const [leaving, setLeaving] = useState(false);
@@ -84,7 +84,7 @@ export function HomeCarousel({ slides, start, signedIn }: { slides: Slide[]; sta
         {slides.map((s, i) => (
           <section key={s.slug} className={`slide${s.kind === 'sealed' ? ' sealed' : ''}${i === idx ? ' active' : ''}`}>
             <div className="case-sheet" style={leaving && i === idx ? { animation: 'lift .6s cubic-bezier(.4,0,.2,1) forwards' } : undefined}>
-              <div className="cs-top"><span className="wm">postmortem<i /></span><span className="cs-count">{pad(i + 1)} / {pad(slides.length)}</span></div>
+              <div className="cs-top"><span className="wm">postmortem<i /></span><span className="cs-top-r"><span className="cs-count">{pad(i + 1)} / {pad(slides.length)}</span><Link className="cs-me" href="/me" aria-label="Profil">{meInitial}</Link></span></div>
               <div className="cs-title"><h1>{s.title}</h1><span className="cs-no">{s.no}</span></div>
               {s.kind === 'live' ? <LiveTimeline s={s} /> : (
                 <>

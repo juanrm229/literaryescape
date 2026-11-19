@@ -1,12 +1,14 @@
 import 'server-only';
 import { notFound, redirect } from 'next/navigation';
-import { getViewer, loadCase, loadProgress, rules } from '@/lib/game';
+import { gateEnv, getViewer, loadCase, loadProgress, rules } from '@/lib/game';
 
-/** Shared guard for every /c/[slug] page: case must exist and be taken. */
+/** Shared guard for every /c/[slug] page: case must exist and be taken. Admins can preview drafts. */
 export async function casePage(slug: string) {
-  const [viewer, c] = await Promise.all([getViewer(), loadCase(slug)]);
+  const viewer = await getViewer();
+  const c = await loadCase(slug, viewer.admin);
   if (!c) notFound();
-  const p = await loadProgress(viewer.readerId, c.id);
-  if (!p.acceptedAt) redirect(`/?case=${encodeURIComponent(slug)}`);
-  return { viewer, c, p, r: rules(c, p) };
+  const [p, env] = await Promise.all([loadProgress(viewer.readerId, c.id), gateEnv(c)]);
+  const preview = c.status !== 'live';
+  if (!p.acceptedAt && !preview) redirect(`/?case=${encodeURIComponent(slug)}`);
+  return { viewer, c, p, env, preview, r: rules(c, p, env) };
 }

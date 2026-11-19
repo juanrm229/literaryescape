@@ -1,0 +1,74 @@
+{
+  "case": { "slug": "lab", "no": "00", "title": "Lab", "tagline": "Perkara contoh: setiap skin dan setiap gembok", "hook": "Penjaga mercusuar itu menjawab radio. Sejak itu radionya tidak mau mati.", "author": "Template untuk penulis postmortem", "status": "draft", "sort": 0 },
+  "config": {
+    "skins": {
+      "0-01": ["note", "Panduan", "report"],
+      "I-01": ["email", "Email", "letter"], "I-02": ["sms", "SMS", "chat"], "I-03": ["voicemail", "Pesan suara", "voice"],
+      "I-04": ["feed", "Media sosial", "web"], "I-05": ["gallery", "Galeri", "photo"], "I-06": ["browser", "Riwayat peramban", "web"],
+      "I-07": ["cctv", "Log CCTV", "report"], "I-08": ["receipt", "Struk", "table"], "I-09": ["idcard", "Kartu identitas", "card"],
+      "I-10": ["route", "Rute", "map"], "I-11": ["report", "Laporan rahasia", "report"], "I-12": ["phone", "Ponsel temuan", "chat"],
+      "III-01": ["note", "Isi loker", "report"], "III-02": ["tape-phone", "Siaran", "voice"], "III-03": ["note", "Surat", "letter"],
+      "IV-01": ["ritual", "Tata cara", "flame"], "IV-02": ["ritual", "Tembang", "flame"], "IV-03": ["tape-phone", "Rekaman", "voice"], "IV-04": ["journal", "Jurnal", "notebook"]
+    },
+    "skinPrefixes": { "II-": ["note", "Gembok", "lock"] },
+    "skinOptions": {
+      "I-02": { "me": "Saya", "title": "Wening" },
+      "I-09": { "title": "KARTU IDENTITAS", "place": "Tanjung, 2023" },
+      "I-12": { "me": "Saya", "time": "01:12", "date": "Jumat, 7 Februari" }
+    },
+    "tapes": {
+      "III-02": { "style": "phone", "label": "Siaran 96,7 MHz", "length": "0:41" },
+      "IV-03": { "style": "phone", "label": "Rekaman · ruang lampu", "length": "2:10" }
+    },
+    "berkas": {
+      "0": { "years": "2025", "motif": "door", "palette": "night" },
+      "I": { "years": "2025", "motif": "lighthouse", "palette": "sea" },
+      "II": { "years": "2025", "motif": "key", "palette": "ochre" },
+      "III": { "years": "2025", "motif": "stone", "palette": "slate" },
+      "IV": { "years": "2027", "motif": "envelope", "palette": "rust" }
+    },
+    "kenal": {},
+    "hints": ["Setiap gembok di Berkas II punya clue di dokumen Berkas I.", "Nama-nama yang menunggu ada di galeri dan laporan rahasia."],
+    "bekal": [["dengar", "Nyalakan suara.", "Radio di II-07 memberi tahu seberapa dekat kamu lewat desisnya."]],
+    "tugas": [["I-12", "Buka ponsel temuan"], ["III-01", "Buka loker"], ["@sent", "Kirim kabar"]],
+    "card": { "goal": "Today’s goal: matikan radio yang terus menghitung.", "audioHint": "Desis radio, 96,7 MHz.", "countdown": "Malam terakhir", "pill": "Lab · ±20 min" },
+    "finale": { "berkas": "IV", "unlockAfter": "III-01", "ritual": "IV-01", "song": "IV-02", "tape": "IV-03", "epilogue": "IV-04", "endingsDoc": "IV-05", "windu": "2027-02-11", "epilogueDate": "2027-02-12", "address": "Laut", "sayLine": "Segara wis nyimpen jenengmu. Wis ya.", "sayTranslation": "Laut sudah menyimpan namamu. Sudah ya." },
+    "endings": { "before": "", "incomplete": "", "after": "" },
+    "replies": { "sampai": "Dia sudah sampai.", "tidur": "Dia sudah tidur.", "tahu": "Dia sudah tahu.", "sini": "Dia masih di sini.", "darat": "Dia masih di darat.", "dup": "Udah ditempel.", "none": "Laut tidak menyimpan nama itu.", "believe": "Kamu tidak bisa lagi mengabari." },
+    "gates": {
+      "III": [{ "type": "puzzle", "key": "lab-padlock" }],
+      "III-02": [{ "type": "kliwon" }],
+      "III-03": [{ "type": "date", "at": "2027-02-11T18:00" }]
+    },
+    "clues": { "start": 2, "perStamp": 1, "cost": 1 }
+  },
+  "answers": [
+    { "name": "Dirga", "aliases": ["dirga", "dirgapramana", "mas dirga"], "habit": "Kopi dua gelas", "question": "Wening, lampunya boleh dimatiin?", "year": 2025 },
+    { "name": "Harun", "aliases": ["harun", "pak harun", "penjaga lama"], "habit": "Radio tabung", "question": "Wis tekan durung?", "year": 1979 }
+  ],
+  "wrong": { "darat": ["wening", "mbak sri", "sri", "ibu"] },
+  "puzzles": [
+    { "key": "lab-padlock", "kind": "padlock", "title": "Gembok loker", "prompt": "Empat angka.", "config": { "length": 4, "charset": "digits" },
+      "solution": { "code": "1924", "hints": ["101 tahun sebelum 2025.", "2025 − 101."] },
+      "reward": { "message": "Klik. Pintu loker terbuka. Berkas III tidak lagi tersegel.", "stamp": { "title": "Loker", "sub": "Gembok · Lab", "motif": "key", "palette": "ochre", "year": "1924" } } },
+    { "key": "lab-date", "kind": "date", "title": "Malam pertama", "prompt": "Kapan malam pertama Dirga jaga sendirian?", "config": { "from": 2024, "to": 2025 },
+      "solution": { "date": "2024-12-28", "hints": ["Malam ke-40 jatuh pada 5 Februari 2025.", "Hitung mundur 39 hari."] },
+      "reward": { "message": "Tanggalnya cocok dengan halaman pertama buku log." } },
+    { "key": "lab-order", "kind": "order", "title": "Urutkan malam itu", "prompt": "Susun dari yang paling awal.",
+      "config": { "items": [{ "id": "d", "text": "Jejak basah di dermaga" }, { "id": "a", "text": "Membeli kopi dua gelas" }, { "id": "c", "text": "SMS: ada yang nanya udah sampai belum" }, { "id": "b", "text": "Foto tangga dari bawah" }] },
+      "solution": { "order": ["a", "b", "c", "d"], "hints": ["Lihat I-10, rute malam itu."] }, "reward": { "message": "Rutenya lengkap." } },
+    { "key": "lab-match", "kind": "match", "title": "Siapa memegang apa", "prompt": "Pasangkan orang dengan bendanya.",
+      "config": { "left": [{ "id": "dirga", "text": "Dirga" }, { "id": "wening", "text": "Wening" }, { "id": "harun", "text": "Pak Harun" }], "right": [{ "id": "radio", "text": "Radio tabung" }, { "id": "jaket", "text": "Jaket oranye" }, { "id": "ponsel", "text": "Rekaman ponsel" }] },
+      "solution": { "pairs": { "dirga": "jaket", "wening": "ponsel", "harun": "radio" }, "hints": ["Galeri menyebut pemilik radionya."] }, "reward": { "message": "Semua benda kembali ke pemiliknya." } },
+    { "key": "lab-hotspot", "kind": "hotspot", "title": "Titik yang menyala", "prompt": "Ketuk lampu yang seharusnya tidak menyala.", "config": { "art": "photo", "alt": "Foto sembilan perahu dan mercusuar" },
+      "solution": { "x": 89, "y": 36, "r": 9, "hints": ["Bukan di perahu. Lebih tinggi.", "Di tanjung, kanan atas."] }, "reward": { "message": "Mercusuarnya. Lampunya menyala sebelum jadwal." } },
+    { "key": "lab-cipher", "kind": "cipher", "title": "Tulisan di balik struk", "prompt": "Baca pesannya.", "config": { "ciphertext": "SLQWX EHODNDQJ" },
+      "solution": { "answers": ["pintu belakang"], "hints": ["Geser tiga.", "Huruf S jadi P."] }, "reward": { "message": "Pintu belakang. Selalu pintu belakang." } },
+    { "key": "lab-radio", "kind": "frequency", "title": "Radio tabung", "prompt": "Putar sampai desisnya hilang.", "config": { "min": 87.5, "max": 108 },
+      "solution": { "freq": 96.7, "tol": 0.15, "hints": ["Laporan rahasia menyebut angkanya."] },
+      "reward": { "message": "Desis berhenti. Seseorang sedang menghitung: siji, loro, telu…", "stamp": { "title": "96,7", "sub": "Frekuensi · Lab", "motif": "wave", "palette": "ink", "year": "1979" } } },
+    { "key": "lab-text", "kind": "text", "title": "Pertanyaan penjaga lama", "prompt": "Apa yang dihitung para istri di batu karang?", "config": { "placeholder": "Satu kata…" },
+      "solution": { "answers": ["hari", "takik", "hari menunggu"], "replies": { "jam": "Lebih panjang dari jam.", "perahu": "Bukan perahu yang dihitung." }, "hints": ["Satu takik untuk setiap…"] },
+      "reward": { "message": "Hari. Satu takik untuk setiap hari." } }
+  ]
+}

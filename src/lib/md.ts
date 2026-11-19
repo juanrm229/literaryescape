@@ -93,7 +93,7 @@ import { icon } from './svg';
   }
 
   // ---------- special quotes ----------
-  function chatHTML(lines) {
+  function chatHTML(lines, meName = 'Ibu') {
     const rows = lines.filter((l) => l.trim());
     const re = /^\*\*(\S+)\*\* (\d{1,2}:\d{2}) (.+)$/;
     if (!rows.length || !rows.every((l) => re.test(l))) return null;
@@ -101,7 +101,7 @@ import { icon } from './svg';
     let last = '';
     for (const l of rows) {
       const [, who, time, text] = l.match(re);
-      const me = who === 'Ibu';
+      const me = who === meName;
       const t = unesc(text);
       let body = inline(text);
       const vn = t.match(/^\[Pesan suara, (\d+:\d+)\]$/);
@@ -146,7 +146,7 @@ import { icon } from './svg';
         continue;
       }
       if (b.t === 'quote') {
-        const special = chatHTML(b.lines) || commentsHTML(b.lines);
+        const special = chatHTML(b.lines, o.me) || commentsHTML(b.lines);
         if (special) { out += special; continue; }
         const inner = parse(b.lines.join('\n'));
         if (inner.length && inner.every((x) => x.t === 'p' && isNote(unesc(x.raw)))) { out += renderBlocks(inner, o); continue; }
@@ -154,6 +154,8 @@ import { icon } from './svg';
         continue;
       }
       // paragraph
+      const pzm = b.raw.trim().match(/^::puzzle\[([\w-]+)\]$/);
+      if (pzm) { out += `<div class="pz-slot" data-pz="${esc(pzm[1])}"></div>`; continue; }
       const text = unesc(b.raw);
       if (isNote(text)) { out += renderNote(text); continue; }
       if (o.tape) {

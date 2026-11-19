@@ -38,5 +38,5 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
     }
   }
   const start = Math.max(0, slides.findIndex((s) => s.slug === sp.case));
-  return <HomeCarousel slides={slides} start={start} signedIn={!!viewer.user} />;
+  return <HomeCarousel slides={slides} start={start} signedIn={!!viewer.user} meInitial={(viewer.user?.email?.[0] ?? "?").toUpperCase()} />;
 }

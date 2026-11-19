@@ -5,7 +5,7 @@ import { db, schema } from '@/db';
 import { Back } from '@/components/ui';
 import { AdminForm } from '@/components/AdminForms';
 import { AdminGate } from '@/components/AdminGate';
-import { updateMeta, uploadBerkas, saveConfig, saveAnswers, deleteCase } from '../actions';
+import { updateMeta, uploadBerkas, saveConfig, saveAnswers, savePuzzles, deleteCase } from '../actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -20,12 +20,14 @@ export default async function AdminCase({ params }: { params: Promise<{ slug: st
   const wrongRows = await db.select().from(schema.wrongAnswers).where(eq(schema.wrongAnswers.caseId, c.id));
   const wrong: Record<string, string[]> = {};
   wrongRows.forEach((w) => (wrong[w.code] ||= []).push(w.alias));
+  const puzzleRows = await db.select().from(schema.puzzles).where(eq(schema.puzzles.caseId, c.id)).orderBy(asc(schema.puzzles.sort));
+  const puzzlesJson = JSON.stringify(puzzleRows.map(({ key, kind, title, prompt, config, solution, reward }) => ({ key, kind, title, prompt, config, solution, reward })), null, 2);
   const answersJson = JSON.stringify({ answers: answers.map(({ name, aliases, habit, question, year }) => ({ name, aliases, habit, question, year })), wrong }, null, 2);
 
   return (
     <AdminGate>
       <div className="page">
-        <header className="hcard"><div className="hc-row"><Back href="/admin" />{c.status === 'live' && <Link className="pillbtn" href={`/c/${slug}`}>Open</Link>}</div>
+        <header className="hcard"><div className="hc-row"><Back href="/admin" /><span className="hc-right"><Link className="pillbtn" href={`/admin/${slug}/analytics`}>Analytics</Link><Link className="pillbtn" href={`/c/${slug}`}>{c.status === "live" ? "Open" : "Preview"}</Link></span></div>
           <span className="chip-g">{c.status} · /{slug}</span><h1>{c.title}</h1><p className="hc-sub">{berkas.length} berkas · {docs.length} dokumen · {answers.length} jawaban</p></header>
         <div className="body grow">
           <h3 className="sub-h">Metadata</h3>
@@ -59,6 +61,12 @@ export default async function AdminCase({ params }: { params: Promise<{ slug: st
           <p className="desk-note">Disimpan hanya di server. Pembaca tidak pernah menerima daftar ini; nama dicek lewat server action.</p>
           <AdminForm action={saveAnswers.bind(null, slug)} submit="Save answers">
             <textarea className="adm-code" name="answers" rows={18} defaultValue={answersJson} spellCheck={false} />
+          </AdminForm>
+
+          <h3 className="sub-h">Puzzles &amp; locks</h3>
+          <p className="desk-note">Jenis: text, cipher, padlock, date, order, match, hotspot, frequency. Taruh di dokumen dengan baris <code>::puzzle[key]</code>, atau jadikan gembok berkas lewat config <code>gates</code>: <code>{`{"III":[{"type":"puzzle","key":"..."}]}`}</code>. Jawaban (solution) tidak pernah dikirim ke pembaca.</p>
+          <AdminForm action={savePuzzles.bind(null, slug)} submit="Save puzzles">
+            <textarea className="adm-code" name="puzzles" rows={16} defaultValue={puzzlesJson} spellCheck={false} />
           </AdminForm>
 
           <h3 className="sub-h">Danger zone</h3>

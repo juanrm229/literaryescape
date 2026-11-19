@@ -5,12 +5,13 @@ import { and, asc, eq, inArray, isNotNull, sql } from 'drizzle-orm';
 import { db, schema } from '@/db';
 import type { ProgressData } from '@/db/schema';
 import { getSession, isAdminEmail } from '@/lib/auth';
-import type { CaseConfig } from '@/lib/case-config';
-import { parseYMD } from '@/lib/jw';
+import type { CaseConfig, Gate } from '@/lib/case-config';
+import { parseYMD, pasaran, fmt as fmtDate, BULAN } from '@/lib/jw';
 
 export const emptyProgress = (): ProgressData => ({
   read: {}, opened: {}, stamps: {}, kenal: {}, board: {}, extra: [], notes: '', bekal: {},
   placed: [], recited: [], tembangLine: 0, believe: false, hintsShown: 1,
+  solved: {}, attempts: {}, lastWrong: {}, pzHints: {}, tokensSpent: 0,
 });
 
 /** "Now" on the server. PM_TODAY lets you rehearse the windu date outside production. */
@@ -101,7 +102,9 @@ export type CaseBundle = {
   config: CaseConfig;
   berkas: { code: string; title: string; intro: string; sort: number }[];
   docs: DocMeta[];
+  puzzles: PuzzleMeta[];
 };
+export type PuzzleMeta = { key: string; kind: string; title: string; prompt: string; config: Record<string, unknown>; reward: Record<string, unknown>; sort: number };
 
 /* Content changes only through /admin or a deploy, so keep it in memory for a minute per server
    instance instead of asking the database on every tap. Admin writes call clearContentCache(). */
@@ -121,17 +124,20 @@ export const listCases = cache(async () => memo('cases', () =>
   db.select({ id: schema.cases.id, slug: schema.cases.slug, no: schema.cases.no, title: schema.cases.title, tagline: schema.cases.tagline, hook: schema.cases.hook, status: schema.cases.status, config: schema.cases.config })
     .from(schema.cases).where(sql`${schema.cases.status} <> 'draft'`).orderBy(asc(schema.cases.sort))));
 
-export const loadCase = cache((slug: string): Promise<CaseBundle | null> => memo('case:' + slug, async () => {
+export const loadCase = cache((slug: string, preview = false): Promise<CaseBundle | null> => memo('case:' + slug, async () => {
   const [c] = await db.select().from(schema.cases).where(eq(schema.cases.slug, slug));
-  if (!c || c.status !== 'live') return null;
-  const [b, docs] = await Promise.all([db.select({ code: schema.berkas.code, title: schema.berkas.title, intro: schema.berkas.intro, sort: schema.berkas.sort })
+  if (!c) return null;
+  const [b, docs, pz] = await Promise.all([db.select({ code: schema.berkas.code, title: schema.berkas.title, intro: schema.berkas.intro, sort: schema.berkas.sort })
     .from(schema.berkas).where(eq(schema.berkas.caseId, c.id)).orderBy(asc(schema.berkas.sort)),
   db.select({
     code: schema.documents.code, title: schema.documents.title, berkasCode: schema.documents.berkasCode, sort: schema.documents.sort, lock: schema.documents.lock,
     words: sql<number>`coalesce(array_length(regexp_split_to_array(${schema.documents.md}, '\\s+'), 1), 0)`,
-  }).from(schema.documents).where(eq(schema.documents.caseId, c.id)).orderBy(asc(schema.documents.sort))]);
-  return { ...c, config: c.config as unknown as CaseConfig, berkas: b, docs };
-}));
+  }).from(schema.documents).where(eq(schema.documents.caseId, c.id)).orderBy(asc(schema.documents.sort)),
+  // public part of every puzzle — the solution column is never selected here
+  db.select({ key: schema.puzzles.key, kind: schema.puzzles.kind, title: schema.puzzles.title, prompt: schema.puzzles.prompt, config: schema.puzzles.config, reward: schema.puzzles.reward, sort: schema.puzzles.sort })
+    .from(schema.puzzles).where(eq(schema.puzzles.caseId, c.id)).orderBy(asc(schema.puzzles.sort))]);
+  return { ...c, config: c.config as unknown as CaseConfig, berkas: b, docs, puzzles: pz };
+}).then((c) => (c && (c.status === 'live' || preview) ? c : null)));
 
 export function loadDocMd(caseId: number, code: string) {
   return memo(`md:${caseId}:${code}`, async () => {
@@ -172,28 +178,113 @@ export const sentCount = cache(async (caseId: number) => {
 /* ------------------------------------------------------------------ */
 /* Rules                                                               */
 /* ------------------------------------------------------------------ */
-export function rules(c: CaseBundle, p: Progress) {
+/* WIB (UTC+7) helpers: gates speak Indonesian time no matter where the server runs. */
+const WIB = 7 * 3600e3;
+function wibParts(now: Date) {
+  const w = new Date(now.getTime() + WIB);
+  return { y: w.getUTCFullYear(), m: w.getUTCMonth(), d: w.getUTCDate(), h: w.getUTCHours(), dow: w.getUTCDay() };
+}
+export function kliwonNightWIB(now: Date) {
+  const t = wibParts(now);
+  const today = new Date(t.y, t.m, t.d), tomorrow = new Date(t.y, t.m, t.d + 1);
+  if (t.dow === 4 && t.h >= 18) return pasaran(tomorrow) === 'Kliwon';
+  if (t.dow === 5 && t.h < 5) return pasaran(today) === 'Kliwon';
+  return false;
+}
+const wibToDate = (at: string) => { const [d, tm = '00:00'] = at.split('T'); const [y, mo, da] = d.split('-').map(Number); const [h, mi] = tm.split(':').map(Number); return new Date(Date.UTC(y, mo - 1, da, h, mi) - WIB); };
+
+export type GateEnv = { now: Date; sent: number };
+/** Only touches the database when a case actually uses a collective gate. */
+export async function gateEnv(c: CaseBundle): Promise<GateEnv> {
+  const usesCollective = Object.values(c.config.gates ?? {}).some((g) => g.some((r) => r.type === 'collective'));
+  return { now: serverNow(), sent: usesCollective ? await sentCount(c.id) : 0 };
+}
+
+export function rules(c: CaseBundle, p: Progress, env: GateEnv = { now: serverNow(), sent: 0 }) {
   const read = p.data.read;
+  const solved = p.data.solved ?? {};
   const finale = c.config.finale;
-  const readable = c.docs.filter((d) => !d.lock && d.berkasCode !== finale.berkas);
   const docsOf = (code: string) => c.docs.filter((d) => d.berkasCode === code);
-  const berkasUnlocked = (code: string) => {
+  const berkasGates = (code: string): Gate[] => {
+    const custom = c.config.gates?.[code];
+    if (custom) return custom;
     const i = c.berkas.findIndex((b) => b.code === code);
-    if (i <= 0) return true;
-    if (code === finale.berkas) return !!read[finale.unlockAfter];
-    const prev = docsOf(c.berkas[i - 1].code);
-    return prev.length === 0 || !!read[prev[prev.length - 1].code];
+    if (i <= 0) return [];
+    if (finale && code === finale.berkas) return [{ type: 'read', code: finale.unlockAfter }];
+    return [{ type: 'sequential' }];
   };
-  const berkasDone = (code: string) => code === finale.berkas ? !!p.sentAt : docsOf(code).filter((d) => !d.lock).every((d) => read[d.code]);
-  const nextUnread = readable.find((d) => !read[d.code] && berkasUnlocked(d.berkasCode)) ?? null;
+  const passes = (g: Gate, target: string): boolean => {
+    switch (g.type) {
+      case 'sequential': {
+        const i = c.berkas.findIndex((b) => b.code === target);
+        if (i <= 0) return true;
+        const prev = docsOf(c.berkas[i - 1].code).filter((d) => !d.lock);
+        return prev.length === 0 || !!read[prev[prev.length - 1].code];
+      }
+      case 'read': return !!read[g.code];
+      case 'puzzle': return !!solved[g.key];
+      case 'date': return env.now.getTime() >= wibToDate(g.at).getTime();
+      case 'kliwon': return kliwonNightWIB(env.now);
+      case 'collective': return env.sent >= g.threshold;
+      default: return true;
+    }
+  };
+  const describe = (g: Gate, target: string): string => {
+    switch (g.type) {
+      case 'sequential': { const i = c.berkas.findIndex((b) => b.code === target); return `Selesaikan Berkas ${c.berkas[i - 1]?.code ?? ''} dulu.`; }
+      case 'read': return `Baca ${g.code} dulu.`;
+      case 'puzzle': { const pz = c.puzzles.find((x) => x.key === g.key); return `Buka gembok “${pz?.title || g.key}”.`; }
+      case 'date': { const d = wibToDate(g.at); const t = wibParts(d); return g.label || `Terbuka ${t.d} ${BULAN[t.m]} ${t.y}, ${String(t.h).padStart(2, '0')}.${String(new Date(d.getTime() + WIB).getUTCMinutes()).padStart(2, '0')} WIB.`; }
+      case 'kliwon': return 'Hanya terbuka pada malam Jumat Kliwon.';
+      case 'collective': return `Terbuka setelah ${g.threshold.toLocaleString('id-ID')} pembaca menyelesaikan perkara (${env.sent.toLocaleString('id-ID')} sejauh ini).`;
+      default: return 'Terkunci.';
+    }
+  };
+  const lockOf = (target: string, gates: Gate[]) => {
+    const failing = gates.filter((g) => !passes(g, target));
+    return { open: failing.length === 0, reasons: failing.map((g) => describe(g, target)), puzzleKeys: failing.filter((g): g is Extract<Gate, { type: 'puzzle' }> => g.type === 'puzzle').map((g) => g.key) };
+  };
+  const berkasLock = (code: string) => lockOf(code, berkasGates(code));
+  const berkasUnlocked = (code: string) => berkasLock(code).open;
+  const docLock = (code: string) => {
+    const d = c.docs.find((x) => x.code === code);
+    if (!d) return { open: false, reasons: ['Tidak ada.'], puzzleKeys: [] as string[] };
+    const b = berkasLock(d.berkasCode);
+    if (!b.open) return b;
+    return lockOf(code, c.config.gates?.[code] ?? []);
+  };
+  const docOpen = (code: string) => docLock(code).open;
+  const isFinale = (code: string) => !!finale && code === finale.berkas;
+  const readable = c.docs.filter((d) => !d.lock && !isFinale(d.berkasCode));
+  const berkasDone = (code: string) => isFinale(code) ? !!p.sentAt : docsOf(code).filter((d) => !d.lock && !c.config.gates?.[d.code]).every((d) => read[d.code]);
+  const nextUnread = readable.find((d) => !read[d.code] && docOpen(d.code)) ?? null;
+  const puzzleStamps = c.puzzles.filter((z) => solved[z.key] && z.reward && (z.reward as { stamp?: unknown }).stamp).length;
+  const tokens = c.config.clues ? c.config.clues.start + c.config.clues.perStamp * Object.keys(p.data.stamps).length - (p.data.tokensSpent ?? 0) : Infinity;
   return {
-    readable, docsOf, berkasUnlocked, berkasDone, nextUnread,
+    readable, docsOf, berkasUnlocked, berkasLock, berkasDone, docLock, docOpen, nextUnread, puzzleStamps, tokens,
     readCount: readable.filter((d) => read[d.code]).length,
     stampCount: Object.keys(p.data.stamps).length + (p.sentAt ? 1 : 0),
-    kabarUnlocked: berkasUnlocked(finale.berkas),
-    windu: parseYMD(finale.windu),
-    epilogueOpen: !!p.sentAt && serverNow() >= parseYMD(finale.epilogueDate),
+    kabarUnlocked: finale ? berkasUnlocked(finale.berkas) : false,
+    windu: parseYMD(finale?.windu || '2099-01-01'),
+    epilogueOpen: !!p.sentAt && serverNow() >= parseYMD(finale?.epilogueDate || '2099-01-01'),
   };
+}
+export type Rules = ReturnType<typeof rules>;
+
+/* ------------------------------------------------------------------ */
+/* Puzzles & events                                                    */
+/* ------------------------------------------------------------------ */
+export function loadPuzzleSolution(caseId: number, key: string) {
+  return memo(`sol:${caseId}:${key}`, async () => {
+    const [r] = await db.select({ solution: schema.puzzles.solution, reward: schema.puzzles.reward, kind: schema.puzzles.kind, title: schema.puzzles.title })
+      .from(schema.puzzles).where(and(eq(schema.puzzles.caseId, caseId), eq(schema.puzzles.key, key)));
+    return r ?? null;
+  });
+}
+
+/** Fire-and-forget analytics event. Never breaks the reader's action. */
+export async function logEvent(caseId: number, readerId: string, kind: string, data: Record<string, unknown> = {}) {
+  try { await db.insert(schema.events).values({ caseId, readerId, kind, data }); } catch { /* analytics must never block reading */ }
 }
 
 import type { Person } from '@/lib/stamps';
@@ -211,4 +302,4 @@ export const answerCount = cache((caseId: number) => memo('answers:' + caseId, a
 }));
 
 export const minutes = (words: number) => Math.max(1, Math.round(words / 200));
-export { isAdminEmail };
+export { isAdminEmail, fmtDate };

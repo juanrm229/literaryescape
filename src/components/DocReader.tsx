@@ -1,6 +1,9 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { PuzzleCard } from './Puzzle';
+import type { PuzzleView } from '@/lib/puzzles';
 import { useUI } from './Shell';
 import { useTape } from './useTape';
 import { audio } from '@/lib/audio';
@@ -8,10 +11,18 @@ import { esc } from '@/lib/esc';
 import { markRead, setOpened } from '@/app/actions';
 
 /** The paper itself: server-rendered HTML + the bits you can touch (envelope, photo, map, tapes). */
-export function DocReader({ slug, code, skin, html, fresh, onTapeEnd }: { slug: string; code: string; skin: string; html: string; fresh?: boolean; onTapeEnd?: (code: string) => void }) {
+const NO_PUZZLES: PuzzleView[] = [];
+
+export function DocReader({ slug, code, skin, html, fresh, onTapeEnd, puzzles = NO_PUZZLES }: { slug: string; code: string; skin: string; html: string; fresh?: boolean; onTapeEnd?: (code: string) => void; puzzles?: PuzzleView[] }) {
   const ref = useRef<HTMLElement>(null);
   const { scroller, toast } = useUI();
   const tape = useTape(ref, scroller, onTapeEnd);
+  // locks embedded in the paper with ::puzzle[key] — mounted into their slots after render
+  const [slots, setSlots] = useState<{ el: Element; view: PuzzleView }[]>([]);
+  useEffect(() => {
+    if (!ref.current || !puzzles.length) { setSlots((s) => (s.length ? [] : s)); return; }
+    setSlots(Array.from(ref.current.querySelectorAll('.pz-slot')).map((el) => ({ el, view: puzzles.find((p) => p.key === (el as HTMLElement).dataset.pz)! })).filter((x) => x.view));
+  }, [html, puzzles]);
 
   // reading counts when the page is actually shown (never on link prefetch)
   useEffect(() => {
@@ -36,6 +47,23 @@ export function DocReader({ slug, code, skin, html, fresh, onTapeEnd }: { slug: 
       if (a === 'open-env') { act.closest('.envelope')?.classList.add('open'); audio.thud(); setOpened(slug, code); }
       if (a === 'flip') act.classList.toggle('flipped');
       if (a === 'tape-play') { const root = act.closest<HTMLElement>('.tape'); if (root) tape.toggle(root); }
+      if (a === 'vm-play') {
+        // voicemail: read the transcript aloud with the device voice
+        const synth = window.speechSynthesis; if (!synth) return;
+        if (synth.speaking) { synth.cancel(); act.classList.remove('on'); return; }
+        const u = new SpeechSynthesisUtterance(act.dataset.text || '');
+        u.lang = 'id-ID'; u.rate = 0.92; u.pitch = 0.9;
+        u.onend = () => act.classList.remove('on');
+        act.classList.add('on'); synth.speak(u);
+      }
+      if (a === 'gal-open') act.classList.toggle('zoom');
+      if (a === 'app-open' || a === 'app-back') {
+        const ph = act.closest<HTMLElement>('[data-phone]'); if (!ph) return;
+        const home = ph.querySelector<HTMLElement>('[data-app-home]');
+        ph.querySelectorAll<HTMLElement>('.fp-panel').forEach((x) => { x.hidden = a === 'app-back' || x.dataset.panel !== act.dataset.app; });
+        if (home) home.hidden = a === 'app-open';
+        audio.tone(a === 'app-open' ? 880 : 660, 0.03, 0.04);
+      }
       return;
     }
     const cue = t.closest<HTMLElement>('.cue');
@@ -51,5 +79,10 @@ export function DocReader({ slug, code, skin, html, fresh, onTapeEnd }: { slug: 
     if ((e.key === 'Enter' || e.key === ' ') && t.matches('[data-act="flip"], .map-pin')) { e.preventDefault(); t.dispatchEvent(new MouseEvent('click', { bubbles: true })); }
   };
 
-  return <article ref={ref} className={`doc skin-${skin}`} data-doc={code} onClick={onClick} onKeyDown={onKey} dangerouslySetInnerHTML={{ __html: html }} />;
+  return (
+    <>
+      <article ref={ref} className={`doc skin-${skin}`} data-doc={code} onClick={onClick} onKeyDown={onKey} dangerouslySetInnerHTML={{ __html: html }} />
+      {slots.map((s) => createPortal(<PuzzleCard slug={slug} view={s.view} />, s.el, s.view.key))}
+    </>
+  );
 }

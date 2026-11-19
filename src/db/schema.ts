@@ -120,6 +120,30 @@ export const readers = pgTable('reader', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
+/** Puzzles / locks. `config` is public (sent to the reader), `solution` never leaves the server. */
+export const puzzles = pgTable('puzzle', {
+  id: serial('id').primaryKey(),
+  caseId: integer('case_id').notNull().references(() => cases.id, { onDelete: 'cascade' }),
+  key: text('key').notNull(),
+  kind: text('kind').notNull(),
+  title: text('title').notNull().default(''),
+  prompt: text('prompt').notNull().default(''),
+  config: jsonb('config').$type<Record<string, unknown>>().notNull().default({}),
+  solution: jsonb('solution').$type<Record<string, unknown>>().notNull().default({}),
+  reward: jsonb('reward').$type<Record<string, unknown>>().notNull().default({}),
+  sort: integer('sort').notNull().default(0),
+}, (t) => [uniqueIndex('puzzle_case_key').on(t.caseId, t.key)]);
+
+/** Append-only reader events: the source for writer analytics. */
+export const events = pgTable('event', {
+  id: serial('id').primaryKey(),
+  caseId: integer('case_id').notNull().references(() => cases.id, { onDelete: 'cascade' }),
+  readerId: text('reader_id').notNull(),
+  kind: text('kind').notNull(),
+  data: jsonb('data').$type<Record<string, unknown>>().notNull().default({}),
+  at: timestamp('at').notNull().defaultNow(),
+}, (t) => [index('event_case_kind_at').on(t.caseId, t.kind, t.at)]);
+
 export type ProgressData = {
   read: Record<string, string>;
   opened: Record<string, boolean>;
@@ -134,6 +158,12 @@ export type ProgressData = {
   tembangLine: number;
   believe: boolean;
   hintsShown: number;
+  /** puzzles */
+  solved: Record<string, string>;
+  attempts: Record<string, number>;
+  lastWrong: Record<string, string>;
+  pzHints: Record<string, number>;
+  tokensSpent: number;
 };
 
 export const progress = pgTable('progress', {

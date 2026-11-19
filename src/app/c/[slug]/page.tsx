@@ -9,18 +9,24 @@ import { CaseHeader } from '@/components/CaseHeader';
 import { ScrollTo } from '@/components/ScrollTo';
 import { Ic, Html } from '@/components/ui';
 import { ShellSync } from '@/components/Shell';
+import { PuzzleCard } from '@/components/Puzzle';
+import { puzzleViews, type PuzzleView } from '@/lib/puzzles';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Archive({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ from?: string }> }) {
   const { slug } = await params;
   const { from } = await searchParams;
-  const { c, p, r } = await casePage(slug);
+  const { c, p, r, preview } = await casePage(slug);
   const now = new Date();
   const days = daysUntil(r.windu, now);
   const nextK = nextMalamKliwon(now);
   const finale = c.config.finale;
+
   const placedN = p.data.placed.length;
+  // padlocked berkas show their lock right in the archive
+  const gateViews: Record<string, PuzzleView[]> = {};
+  for (const b of c.berkas) { const l = r.berkasLock(b.code); if (!l.open && l.puzzleKeys.length) gateViews[b.code] = await puzzleViews(c, p, r, l.puzzleKeys); }
   const total = await answerCount(c.id);
 
   return (
@@ -34,7 +40,7 @@ export default async function Archive({ params, searchParams }: { params: Promis
           <span>{r.stampCount}/{c.berkas.length} stamps</span>
           <span className={days <= 14 ? 'hot' : ''}>windu · {days > 0 ? `${days}d` : days === 0 ? 'tonight' : 'passed'}</span>
         </div>
-        <p className="kliwon-note">Next malam Jumat Kliwon: {nextK ? fmt(nextK) : '—'}</p>
+        <p className="kliwon-note">{preview ? 'Admin preview — this case is not live yet.' : `Next malam Jumat Kliwon: ${nextK ? fmt(nextK) : '—'}`}</p>
 
         {c.berkas.map((b, bi) => {
           const open = r.berkasUnlocked(b.code);
@@ -45,13 +51,15 @@ export default async function Archive({ params, searchParams }: { params: Promis
               {done ? <Html as="span" className="sec-stamp" html={berkasStamp(c.config, b)} /> : <span>{meta?.years}</span>}</div>
           );
           if (!open) {
+            const l = r.berkasLock(b.code);
             return (
               <section className="sec locked" key={b.code}>{head}
-                <p className="lockrow"><Ic name="lock" />{b.code === finale.berkas ? `Locked. Kebuka setelah ${finale.unlockAfter}.` : `Locked. Selesaikan Berkas ${c.berkas[bi - 1].code} dulu.`}</p>
+                {l.reasons.map((x, i) => <p className="lockrow" key={i}><Ic name="lock" />{x}</p>)}
+                {(gateViews[b.code] ?? []).map((v) => <PuzzleCard key={v.key} slug={c.slug} view={v} />)}
               </section>
             );
           }
-          if (b.code === finale.berkas) {
+          if (finale && b.code === finale.berkas) {
             return (
               <section className="sec" key={b.code}>{head}
                 <Link className="kabar-card" href={`/c/${c.slug}/kabar`}>
@@ -67,6 +75,18 @@ export default async function Archive({ params, searchParams }: { params: Promis
               <ul className="rows">
                 {r.docsOf(b.code).filter((d) => !d.lock).map((d) => {
                   const read = !!p.data.read[d.code];
+                  const dl = r.docLock(d.code);
+                  if (!dl.open) {
+                    return (
+                      <li key={d.code}>
+                        <Link className="row lockd" href={`/c/${c.slug}/d/${d.code}`} id={`row-${d.code}`}>
+                          <span className="box"><Ic name="lock" /></span>
+                          <Html as="span" className="row-t" html={`<b>${d.code}</b>${inline(d.title)}`} />
+                          <span className="row-why">{dl.reasons[0]}</span>
+                        </Link>
+                      </li>
+                    );
+                  }
                   return (
                     <li key={d.code}>
                       <Link className={`row${read ? ' read' : ''}`} href={`/c/${c.slug}/d/${d.code}`} id={`row-${d.code}`}>

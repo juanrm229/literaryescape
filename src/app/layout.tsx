@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import './docs.css';
 import './app.css';
+import './puzzles.css';
+import './skins.css';
 import { Shell } from '@/components/Shell';
 import { StatusBar } from '@/components/StatusBar';
 

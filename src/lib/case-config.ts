@@ -1,3 +1,12 @@
+/** Unlock rules. A berkas/doc opens when ALL of its rules pass. */
+export type Gate =
+  | { type: 'sequential' }                         // last doc of the previous berkas has been read
+  | { type: 'read'; code: string }                 // a specific doc has been read
+  | { type: 'puzzle'; key: string }                // a puzzle/lock has been solved
+  | { type: 'date'; at: string; label?: string }    // real time, WIB (YYYY-MM-DDTHH:mm)
+  | { type: 'kliwon' }                              // only on malam Jumat Kliwon (WIB)
+  | { type: 'collective'; threshold: number };      // N readers worldwide have finished
+
 /** Shape of `case.config` (jsonb). Editable from /admin as JSON. */
 export type SkinRow = [skin: string, label: string, icon: string];
 
@@ -31,6 +40,14 @@ export type CaseConfig = {
   };
   endings: { before: string; incomplete: string; after: string };
   replies: Record<string, string>;
+  /** optional: rules per berkas code or doc code (default for berkas = sequential) */
+  gates?: Record<string, Gate[]>;
+  /** optional clue economy for puzzle hints: tokens = start + perStamp × stamps − spent */
+  clues?: { start: number; perStamp: number; cost: number };
+  /** optional per-document skin options, e.g. { "IV-07": { "me": "Ibu" } } */
+  skinOptions?: Record<string, Record<string, unknown>>;
+  /** optional: case has a final envelope (Nyewu-style). Absent → case ends when every puzzle is solved. */
+  hasEnvelope?: boolean;
 };
 
 export function skinOf(cfg: CaseConfig, code: string): SkinRow {

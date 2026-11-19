@@ -11,7 +11,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { eq } from 'drizzle-orm';
 import { db, schema } from '../src/db';
-import { importBerkasMarkdown, replaceAnswers } from '../src/lib/content/import';
+import { importBerkasMarkdown, replaceAnswers, replacePuzzles } from '../src/lib/content/import';
 
 const ROOT = path.resolve(import.meta.dirname, '..', 'content');
 
@@ -27,6 +27,7 @@ async function seedCase(slug: string) {
     console.log(`  ${slug} · Berkas ${r.berkas} — ${r.title}: ${r.docs} docs`);
   }
   if (meta.answers) await replaceAnswers(row.id, meta.answers, meta.wrong || {});
+  await replacePuzzles(row.id, meta.puzzles || []);
   console.log(`✓ ${slug}: ${files.length} berkas, ${meta.answers?.length ?? 0} answers`);
 }
 

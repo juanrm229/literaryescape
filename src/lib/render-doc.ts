@@ -4,6 +4,7 @@ import { esc } from '@/lib/esc';
 import { BULAN, postmark } from '@/lib/jw';
 import type { CaseConfig } from '@/lib/case-config';
 import { kenalStamp } from '@/lib/stamps';
+import { renderSkin, LIBRARY_SKINS } from '@/lib/skins';
 
 type Block = { t: string; raw: string; lines: string[] };
 
@@ -29,6 +30,7 @@ export function tapeHTML(cfg: CaseConfig, code: string, md: string) {
 /** Document body HTML for a skin. Pure string output; the client wires up the interactions. */
 export function renderDocBody(cfg: CaseConfig, doc: { code: string; title: string; md: string }, skinName: string, opened: boolean) {
   const md = doc.md;
+  if (LIBRARY_SKINS.includes(skinName)) return renderSkin(skinName, md, cfg.skinOptions?.[doc.code] ?? {});
   if (skinName === 'letter') {
     const d = parseLetterDate(doc.title) || new Date(1979, 8, 6);
     return `<div class="envelope${opened ? ' open' : ''}" data-doc="${esc(doc.code)}">
