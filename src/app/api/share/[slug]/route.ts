@@ -2,6 +2,7 @@ import { and, count, eq, isNotNull, lte } from 'drizzle-orm';
 import { db, schema } from '@/db';
 import { getViewer, loadCase, loadProgress } from '@/lib/game';
 import { buildProfile } from '@/lib/profile';
+import { progressIdFor } from '@/lib/coop';
 import { rankCardSvg, sentCardSvg, stampCardSvg, toPng } from '@/lib/share-card';
 
 export const runtime = 'nodejs';
@@ -35,7 +36,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
   } else if (k === 'sent') {
     const c = await loadCase(slug);
     if (!c || !v.readerId) return no('not found');
-    const p = await loadProgress(v.readerId, c.id);
+    const p = await loadProgress(await progressIdFor(v.readerId, c.id), c.id);
     if (!p.sentAt) return no('belum dikirim', 403);
     const [{ n }] = await db.select({ n: count() }).from(schema.progress)
       .where(and(eq(schema.progress.caseId, c.id), isNotNull(schema.progress.sentAt), lte(schema.progress.sentAt, p.sentAt)));

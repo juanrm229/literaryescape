@@ -11,13 +11,14 @@ import { Ic, Html } from '@/components/ui';
 import { ShellSync } from '@/components/Shell';
 import { PuzzleCard } from '@/components/Puzzle';
 import { puzzleViews, type PuzzleView } from '@/lib/puzzles';
+import { holderOf } from '@/lib/coop';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Archive({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ from?: string }> }) {
   const { slug } = await params;
   const { from } = await searchParams;
-  const { c, p, r, preview } = await casePage(slug);
+  const { c, p, r, preview, room } = await casePage(slug);
   const now = new Date();
   const days = daysUntil(r.windu, now);
   const nextK = nextMalamKliwon(now);
@@ -87,12 +88,14 @@ export default async function Archive({ params, searchParams }: { params: Promis
                       </li>
                     );
                   }
+                  const holder = holderOf(room, c, d.code);
+                  const mine = holder?.readerId === room?.me.readerId;
                   return (
                     <li key={d.code}>
-                      <Link className={`row${read ? ' read' : ''}`} href={`/c/${c.slug}/d/${d.code}`} id={`row-${d.code}`}>
+                      <Link className={`row${read ? ' read' : ''}${holder && !mine ? ' held' : ''}`} href={`/c/${c.slug}/d/${d.code}`} id={`row-${d.code}`}>
                         <span className="box">{read && <Ic name="check" />}</span>
                         <Html as="span" className="row-t" html={`<b>${d.code}</b>${inline(d.title)}`} />
-                        <span className="row-why">{skinOf(c.config, d.code)[1]} · {minutes(d.words)} min</span>
+                        <span className="row-why">{holder && <i className="row-seat" style={{ background: holder.color }}>{mine ? 'kamu' : holder.name}</i>}{skinOf(c.config, d.code)[1]} · {minutes(d.words)} min</span>
                       </Link>
                     </li>
                   );

@@ -11,12 +11,14 @@ import { updateDesk, resetProgress } from '@/app/actions';
 import { authClient } from '@/lib/auth-client';
 import { ReadingSettings } from './ReadingSettings';
 import { InstallRow } from './Pwa';
+import { CoopPanel } from './Room';
 
 type Props = {
   slug: string; sub: string;
   bekalList: [string, string, string][]; tugas: { code: string; text: string; ok: boolean; link: boolean }[];
   bekal: Record<string, boolean>; board: Record<string, string>; extra: string[]; notes: string; believe: boolean;
   roster: string[][] | null; user: { email: string; name: string } | null; admin: boolean;
+  room: { code: string; members: number } | null; defaultName: string;
 };
 
 const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -60,6 +62,8 @@ export function DeskView(props: Props) {
             <details><summary>Why this?</summary><p>{why}</p></details>
           </li>))}
         </ul>
+        <h3 className="sub-h">Main bareng</h3>
+        <CoopPanel slug={slug} room={props.room} defaultName={props.defaultName} />
         <h3 className="sub-h">Account</h3>
         <div className="acct">
           {props.user

@@ -12,13 +12,15 @@ import { PuzzleCard } from '@/components/Puzzle';
 import { puzzleKeysIn, puzzleViews } from '@/lib/puzzles';
 import { Back, ClueButton, Html, Ic, SoundButton } from '@/components/ui';
 import { ShellSync } from '@/components/Shell';
+import { holderOf } from '@/lib/coop';
+import { HeldDoc, ShareToTable } from '@/components/Room';
 
 export const dynamic = 'force-dynamic';
 
 export default async function DocPage({ params }: { params: Promise<{ slug: string; code: string }> }) {
   const { slug, code: rawCode } = await params;
   const code = decodeURIComponent(rawCode);
-  const { c, p, r } = await casePage(slug);
+  const { c, p, r, room } = await casePage(slug);
   const doc = c.docs.find((d) => d.code === code);
   const finale = c.config.finale;
   if (!doc || doc.lock) redirect(`/c/${slug}`);
@@ -34,6 +36,19 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
           <span className="chip-g">{code}</span><h1>Still locked</h1><p className="hc-sub">Arsip ini dibaca berurutan.</p></header>
         <div className="body"><div className="lockcard"><Html html={berkasStamp(c.config, b)} /><h2>{r.berkasUnlocked(b.code) ? code : `Berkas ${b.code} — ${b.title}`}</h2>{lock.reasons.map((x, i) => <p key={i}>{x}</p>)}<Link className="cta" href={`/c/${slug}`}>Back to archive</Link></div>
           {gatePuzzles.map((v) => <PuzzleCard key={v.key} slug={slug} view={v} />)}</div>
+      </div>
+    );
+  }
+
+  // co-op, split mode: someone else holds this one — the text never leaves the server for you
+  const holder = holderOf(room, c, code);
+  if (holder && holder.readerId !== room?.me.readerId) {
+    return (
+      <div className="page">
+        <header className="hcard"><div className="hc-row"><Back href={`/c/${slug}?from=${code}`} /></div>
+          <span className="chip-g">Berkas {b.code} · {code}</span><h1 dangerouslySetInnerHTML={{ __html: inline(doc.title) }} /><p className="hc-sub">Meja {room!.code} · mode terbagi</p></header>
+        <div className="body"><HeldDoc slug={slug} code={code} holder={{ name: holder.name, color: holder.color }} /></div>
+        <div className="bar2"><Link className="cta" href={`/c/${slug}`}>Back to archive</Link></div>
       </div>
     );
   }
@@ -63,6 +78,7 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
       </div>
       <div className="bar2">
         {prev && <Link className="sq dark" href={`/c/${slug}/d/${prev.code}`} aria-label="Previous"><Ic name="back" /></Link>}
+        {holder && <ShareToTable slug={slug} code={code} />}
         {next
           ? <Link className="cta" href={`/c/${slug}/d/${next.code}`}>Next <small>{next.code} · {plain(next.title)}</small></Link>
           : finale && (r.kabarUnlocked || read8(p, finale.unlockAfter, code))

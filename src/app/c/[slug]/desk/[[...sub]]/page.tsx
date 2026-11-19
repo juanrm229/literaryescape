@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function Desk({ params }: { params: Promise<{ slug: string; sub?: string[] }> }) {
   const { slug, sub } = await params;
-  const { viewer, c, p } = await casePage(slug);
+  const { viewer, room, c, p } = await casePage(slug);
   const tab = ['prep', 'tasks', 'board', 'pasaran', 'notes'].includes(sub?.[0] ?? '') ? sub![0] : 'prep';
 
   // the 41-name board comes from the harbourmaster's report, once the reader has opened it
@@ -30,6 +30,8 @@ export default async function Desk({ params }: { params: Promise<{ slug: string;
         slug={slug} sub={tab} bekalList={c.config.bekal} tugas={tugas}
         bekal={p.data.bekal} board={p.data.board} extra={p.data.extra} notes={p.data.notes} believe={p.data.believe}
         roster={roster} user={viewer.user} admin={viewer.admin}
+        room={room ? { code: room.code, members: room.members.length } : null}
+        defaultName={room?.me.name ?? (viewer.user?.name && viewer.user.name !== viewer.user.email ? viewer.user.name : viewer.user?.email?.split('@')[0] ?? '')}
       />
     </div>
   );

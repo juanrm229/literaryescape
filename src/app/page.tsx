@@ -1,3 +1,4 @@
+import { progressIdFor } from '@/lib/coop';
 import { getViewer, listCases, loadCase, loadProgress, rules, sentCount } from '@/lib/game';
 import { stamp } from '@/lib/stamps';
 import { chipDate, daysUntil, parseYMD } from '@/lib/jw';
@@ -16,7 +17,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
     if (r.status === 'live') {
       const c = await loadCase(r.slug);
       if (!c) continue;
-      const p = await loadProgress(viewer.readerId, c.id);
+      const p = await loadProgress(await progressIdFor(viewer.readerId, c.id), c.id);
       const rl = rules(c, p);
       const cfg = c.config;
       slides.push({

@@ -174,3 +174,37 @@ export const progress = pgTable('progress', {
   data: jsonb('data').$type<ProgressData>().notNull(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 }, (t) => [primaryKey({ columns: [t.readerId, t.caseId] }), index('progress_case_sent').on(t.caseId, t.sentAt)]);
+
+/* ------------------------------------------------------------------ */
+/* Co-op: up to four readers share one progress row (owned by a synthetic reader `room:<code>`). */
+/* ------------------------------------------------------------------ */
+export const rooms = pgTable('room', {
+  code: text('code').primaryKey(),
+  caseId: integer('case_id').notNull().references(() => cases.id, { onDelete: 'cascade' }),
+  progressId: text('progress_id').notNull().references(() => readers.id, { onDelete: 'cascade' }),
+  hostId: text('host_id').notNull(),
+  /** together = everyone sees everything; split = documents are dealt between seats */
+  mode: text('mode').$type<'together' | 'split'>().notNull().default('together'),
+  /** split mode: documents someone has put on the table for everyone */
+  shared: jsonb('shared').$type<string[]>().notNull().default([]),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
+export const roomMembers = pgTable('room_member', {
+  code: text('code').notNull().references(() => rooms.code, { onDelete: 'cascade' }),
+  readerId: text('reader_id').notNull().references(() => readers.id, { onDelete: 'cascade' }),
+  name: text('name').notNull(),
+  seat: integer('seat').notNull(),
+  joinedAt: timestamp('joined_at').notNull().defaultNow(),
+  lastSeen: timestamp('last_seen').notNull().defaultNow(),
+}, (t) => [primaryKey({ columns: [t.code, t.readerId] }), index('room_member_reader').on(t.readerId)]);
+
+/** The room's table talk: chat lines and the activity feed. */
+export const roomMsgs = pgTable('room_msg', {
+  id: serial('id').primaryKey(),
+  code: text('code').notNull().references(() => rooms.code, { onDelete: 'cascade' }),
+  readerId: text('reader_id').notNull(),
+  kind: text('kind').notNull(),
+  text: text('text').notNull(),
+  at: timestamp('at').notNull().defaultNow(),
+}, (t) => [index('room_msg_code_id').on(t.code, t.id)]);

@@ -27,6 +27,8 @@ export function serverNow() {
 export type Viewer = { readerId: string | null; user: { id: string; email: string; name: string } | null; admin: boolean };
 
 async function mergeProgress(fromReader: string, intoReader: string) {
+  // co-op seats follow the reader into their account (ignore if the account already sits at that table)
+  await db.update(schema.roomMembers).set({ readerId: intoReader }).where(eq(schema.roomMembers.readerId, fromReader)).catch(() => {});
   const rows = await db.select().from(schema.progress).where(eq(schema.progress.readerId, fromReader));
   for (const r of rows) {
     const [mine] = await db.select().from(schema.progress).where(and(eq(schema.progress.readerId, intoReader), eq(schema.progress.caseId, r.caseId)));

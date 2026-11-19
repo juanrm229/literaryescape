@@ -1,5 +1,6 @@
 import 'server-only';
-import { eq } from 'drizzle-orm';
+import { inArray } from 'drizzle-orm';
+import { memberships } from '@/lib/coop';
 import { db, schema } from '@/db';
 import { listCases, loadCase, rules, kliwonNightWIB, emptyProgress, placedPeople, type Progress } from '@/lib/game';
 import { berkasStamp, kenalStamp, kabarStamp, stamp } from '@/lib/stamps';
@@ -24,7 +25,11 @@ const wibHour = (iso: string) => new Date(new Date(iso).getTime() + WIB).getUTCH
 
 /** Everything the profile page shows, across every live case. */
 export async function buildProfile(readerId: string | null) {
-  const rows = readerId ? await db.select().from(schema.progress).where(eq(schema.progress.readerId, readerId)) : [];
+  // a reader seated in a co-op room plays that case on the room's row
+  const seats = readerId ? await memberships(readerId) : [];
+  const ids = [...new Set([readerId, ...seats.map((s) => s.progressId)].filter(Boolean) as string[])];
+  const all = ids.length ? await db.select().from(schema.progress).where(inArray(schema.progress.readerId, ids)) : [];
+  const rows = all.filter((r) => { const s = seats.find((x) => x.caseId === r.caseId); return s ? r.readerId === s.progressId : r.readerId === readerId; });
   const cases = (await listCases()).filter((c) => c.status === 'live');
   const out: CaseProfile[] = [];
   let points = 0, docsRead = 0, solved = 0, closed = 0, stampsTotal = 0;
