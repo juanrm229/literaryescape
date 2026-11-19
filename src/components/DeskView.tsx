@@ -15,6 +15,8 @@ import { CoopPanel } from './Room';
 import { EvidenceBoard } from './EvidenceBoard';
 import { SerialRow } from './SerialRow';
 import type { Pin } from '@/db/schema';
+import type { PuzzleView } from '@/lib/puzzles';
+import { PuzzleCard } from './Puzzle';
 
 type Props = {
   slug: string; sub: string;
@@ -22,7 +24,8 @@ type Props = {
   bekal: Record<string, boolean>; board: Record<string, string>; extra: string[]; notes: string; believe: boolean;
   roster: string[][] | null; user: { email: string; name: string } | null; admin: boolean;
   room: { code: string; members: number } | null; defaultName: string;
-  pins: Pin[]; strings: string[]; titles: Record<string, string>;
+  pins: Pin[]; strings: string[]; glow: string[]; titles: Record<string, string>;
+  tabs: string[]; questions: PuzzleView[];
   serial: { active: boolean; email: string | null };
 };
 
@@ -49,7 +52,8 @@ export function DeskView(props: Props) {
     return () => clearTimeout(t);
   }, [notes, slug, props.notes]);
 
-  const segs: [string, string][] = [['prep', 'Prep'], ['tasks', 'Tasks'], ['papan', 'Papan'], ['board', 'Board 41'], ['pasaran', 'Pasaran'], ['notes', 'Notes']];
+  const LABELS: Record<string, string> = { prep: 'Prep', tasks: 'Tasks', papan: 'Papan', tanya: 'Pertanyaan', board: 'Board 41', pasaran: 'Pasaran', notes: 'Notes' };
+  const segs: [string, string][] = props.tabs.map((k) => [k, LABELS[k] ?? k]);
   const believe = (on: boolean) => start(async () => {
     await updateDesk(slug, { believe: on });
     toast(on ? '<b>Sekarang kamu bisa melihat mereka.</b><br>Mereka juga bisa melihatmu.' : '<b>Ini cuma cerita.</b> Good.', { ms: on ? 5200 : 2400 });
@@ -103,8 +107,16 @@ export function DeskView(props: Props) {
         </ul>
       </>
     );
+  } else if (sub === 'tanya') {
+    const open = props.questions.filter((q) => !q.solved).length;
+    body = (
+      <>
+        <p className="desk-note">Arsip tidak menjawab pertanyaan-pertanyaan ini secara langsung. Setiap jawaban dirakit dari minimal dua dokumen. {open ? `${open} masih terbuka.` : 'Semua terjawab.'}</p>
+        {props.questions.map((q) => <PuzzleCard key={q.key} slug={slug} view={q} />)}
+      </>
+    );
   } else if (sub === 'papan') {
-    body = <EvidenceBoard slug={slug} pins={props.pins} strings={props.strings} titles={props.titles} />;
+    body = <EvidenceBoard slug={slug} pins={props.pins} strings={props.strings} glow={props.glow} titles={props.titles} />;
   } else if (sub === 'board') {
     if (!props.roster) {
       body = <div className="lockcard" style={{ marginTop: 18 }}><Ic name="lock" /><h2>Board masih kosong</h2><p>Nama-namanya ada di laporan syahbandar. Baca I-02 dulu.</p><Link className="cta" href={`/c/${slug}/d/I-02`}>Open I-02</Link></div>;

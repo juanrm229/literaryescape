@@ -12,7 +12,7 @@ import { joinWaitlist } from '@/app/extra-actions';
 import { haptic } from '@/lib/haptics';
 
 export type Slide =
-  | { kind: 'live'; slug: string; no: string; title: string; hook: string; tagline: string; today: string; goal: string; audioHint: string; countdown: string; pill: string; wind: string; days: number; docs: number; berkas: number; pct: number; stamps: number; accepted: boolean; sent: boolean; voices: number }
+  | { kind: 'live'; slug: string; no: string; title: string; hook: string; tagline: string; today: string; goal: string; audioHint: string; countdown: string; pill: string; wind: string; days: number; docs: number; berkas: number; pct: number; stamps: number; accepted: boolean; sent: boolean; voices: number; brief: string[]; when: string; voice: string; sound: 'oars' | 'jingle'; chip: string; pillLine: string; doneLabel: string }
   | { kind: 'sealed'; slug: string; no: string; title: string; tagline: string; seal: string; lines: number[][]; opensAt: string | null; teaser: string | null; waiting: number; onList: boolean; email: string | null };
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -66,12 +66,12 @@ export function HomeCarousel({ slides, start, signedIn, meInitial = "?" }: { sli
       <>
         <h2 className="sh-title">The brief</h2>
         <p className="sh-sub">Case {cur.no} · {cur.title} — {cur.tagline}</p>
-        <ul className="brief-list">
+        <ul className="brief-list">{cur.brief.length ? cur.brief.map((b, i) => <li key={i}>{b}</li>) : <>
           <li>{cur.docs} dokumen, {cur.berkas} berkas. Kliping, notulen, surat, kaset, chat, skripsi.</li>
           <li>Baca berurutan. Berkas berikutnya kebuka setelah dokumen terakhir berkas sebelumnya.</li>
           <li>Setiap berkas selesai = satu stamp. Setiap kartu kenal = satu stamp.</li>
           <li>Desk nyimpen catatan, board 41 nama, dan kalender pasaran.</li>
-          <li>Berkas IX terkunci. The key is a list of names.</li>
+          <li>Berkas IX terkunci. The key is a list of names.</li></>}
         </ul>
         <p className="sh-sub">{signedIn ? 'Progress kamu tersinkron ke akunmu.' : <>Progress tersimpan di server, terikat ke browser ini. <Link href="/login" onClick={closeSheet} style={{ textDecoration: 'underline' }}>Sign in</Link> buat sync ke device lain.</>}</p>
         <button className="cta yellow" onClick={() => take(cur.slug, cur.accepted)}>{cur.accepted ? 'Open the case' : 'Take the case'}</button>
@@ -130,6 +130,7 @@ function LiveTimeline({ s }: { s: Extract<Slide, { kind: 'live' }> }) {
   const [playing, setPlaying] = useState<string | null>(null);
   const demo = (kind: 'song' | 'oars') => {
     audio.boot(); setPlaying(kind);
+    if (kind === 'oars' && s.sound === 'jingle') { audio.jingle(); setTimeout(() => setPlaying(null), 3200); return; }
     if (kind === 'oars') { audio.startOars(0.3); setTimeout(() => { audio.stopOars(); setPlaying(null); }, 8200); }
     else { audio.startHiss(0.05); setTimeout(() => { audio.stopHiss(); setPlaying(null); }, 4000); toast(`<b>${esc(s.audioHint)}</b>`); }
   };
@@ -144,12 +145,12 @@ function LiveTimeline({ s }: { s: Extract<Slide, { kind: 'live' }> }) {
     <>
       <span className="chip-g">{s.today}</span>
       <div className="tl-it"><p>{s.goal}</p></div>
-      <span className="chip-g">THU 8 FEB 1979</span>
-      <div className="tl-it"><p>“{s.hook}”</p><Aud k="song" av="K" t="00:34" /><Aud k="oars" av="?" alt short t="00:04" /></div>
-      <span className="chip-g">{s.wind}</span>
-      <div className="tl-it"><p>{s.countdown}</p><span className="sub"><span className="spin" />{s.days > 0 ? `${s.days} days remaining` : s.days === 0 ? 'tonight' : 'already passed'}</span>
-        <div className="pcard"><span className="pill">{s.pill}</span><p>{s.docs} dokumen, {s.berkas} berkas, satu amplop kosong.</p></div>
-        <span className="voices"><i />{s.voices.toLocaleString('id-ID')} {s.voices === 1 ? 'reader has' : 'readers have'} sent the kabar</span>
+      <span className="chip-g">{s.when}</span>
+      <div className="tl-it"><p>“{s.hook}”</p><Aud k="song" av={s.voice} t="00:34" /><Aud k="oars" av="?" alt short t={s.sound === 'jingle' ? '00:02' : '00:04'} /></div>
+      <span className="chip-g">{s.chip || s.wind}</span>
+      <div className="tl-it"><p>{s.countdown}</p>{s.wind && <span className="sub"><span className="spin" />{s.days > 0 ? `${s.days} days remaining` : s.days === 0 ? 'tonight' : 'already passed'}</span>}
+        <div className="pcard"><span className="pill">{s.pill}</span><p>{s.docs} dokumen, {s.berkas} berkas{s.pillLine ? `, ${s.pillLine}` : ', satu amplop kosong'}.</p></div>
+        <span className="voices"><i />{s.voices.toLocaleString('id-ID')} {s.voices === 1 ? 'reader has' : 'readers have'} {s.doneLabel || 'sent the kabar'}</span>
       </div>
     </>
   );

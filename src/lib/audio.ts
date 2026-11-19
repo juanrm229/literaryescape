@@ -131,8 +131,24 @@
     o.connect(g).connect(master); o.start(t); o.stop(t + dur + 0.02);
   }
 
+  /** The station jingle: five piano notes, four up and one down. */
+  function jingle() {
+    if (!boot()) return;
+    const notes = [523.25, 659.25, 783.99, 1046.5, 880];
+    notes.forEach((f, i) => {
+      const t = ctx.currentTime + 0.25 + i * 0.32;
+      [1, 2, 3].forEach((h, k) => { // a few partials, quick decay: reads as an old upright piano
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = k ? 'sine' : 'triangle'; o.frequency.value = f * h;
+        g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime((0.16 / h) * (i === 4 ? 1.1 : 1), t + 0.012);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + (i === 4 ? 1.6 : 0.7));
+        o.connect(g).connect(master); o.start(t); o.stop(t + 1.7);
+      });
+    });
+  }
+
   export const audio = {
-    setStatic, stopStatic, tone,
+    setStatic, stopStatic, tone, jingle,
     onStroke: null as null | (() => void),
     boot, startHiss, stopHiss, startOars, stopOars, burstStatic, startSea, stopSea, thud,
     stopAll() { stopHiss(); stopOars(); stopSea(); },

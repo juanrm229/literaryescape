@@ -121,3 +121,31 @@ You don't configure these; they work on any case.
 - **Collective gate**: `{ "type": "collective", "threshold": 500 }` on a berkas or document opens it for *everyone* once that many readers have sent the kabar. The archive shows a shared meter.
 - **Morning letters** (Desk ▸ Prep ▸ Surat pagi): one document's opening lines by email at 06.00 WIB until the reader is done. Strong first lines matter.
 - **Share cards**: earned stamps, rank, and a spoiler-free "kabar sudah sampai" card, rendered as 1080×1920 images.
+
+## 9. Case tanpa amplop (contoh: Case 02 · Episode 41)
+
+`finale` is optional. Without it, close the case with a lock:
+
+```json
+"closeOn": { "puzzle": "ratri" },
+"gates": { "IX": [{ "type": "sequential" }, { "type": "puzzle", "key": "ratri" }] }
+```
+
+Other knobs used by Episode 41:
+
+| Key | What it does |
+| --- | --- |
+| `typewriter` | `{ "I-05": "olympia", "I-02": "plain" }`. Typed look + a **Kaca pembesar** button. `olympia` lifts every lowercase *g* and clogs every *e*, only visible under the loupe. |
+| `photos` | `{ "I-02": [{ "src": "/cases/case-02/P05.webp", "caption": "…", "tall": false }] }` printed above the document; tap to enlarge. Put files in `public/cases/<slug>/`. |
+| `boardLinks` | `[["I-05","II-10"], …]` pairs of documents. A red string between quotes from such a pair glows. |
+| `questions` + `desk` | Puzzle keys shown in **Desk ▸ Pertanyaan**; `desk` lists which Desk tabs appear (`prep, tasks, tanya, papan, board, pasaran, notes`). |
+| `letter` / `skinOptions[code]` | Envelope recipient, address and postmark for the `letter` skin. |
+| `card.when / voice / sound / chip / pillLine / doneLabel / brief` | Home card copy; `sound: "jingle"` plays the station jingle. |
+| `tapes[code].jingle` | The jingle plays when that tape's transcript ends. |
+| `stampsWhy` | The album's "Kenapa stamp?" paragraph. |
+
+New skins: `script` (radio script; "Catatan pinggir, **pensil**/**tinta**:" before a quote renders as margin handwriting), `thread` (one blockquote → author header, `**1/**` posts, `**@handle** · text` replies), `brochure`.
+
+New puzzle kind `memory`: `config.statements` (shown one at a time, no back button), `solution.truth` (`b`/`s` per statement), `sandiwara`/`utas` (1-based statement numbers whose "Benar" counts as a borrowed memory), and `messages.sandiwara` (`[X]` = count) / `utas` / `perfect` / `clean`. Any complete answer set opens it; the reader gets their personal result.
+
+A paragraph containing only `::fin` ends the archive: five piano notes, then the screen fades to black.

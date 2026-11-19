@@ -15,7 +15,7 @@ export type CaseConfig = {
   skins: Record<string, SkinRow>;
   /** fallback by code prefix, e.g. { "II-": ["letter","Surat","letter"] } */
   skinPrefixes: Record<string, SkinRow>;
-  tapes: Record<string, { style: 'cassette' | 'phone'; label: string; brand?: string; length?: string }>;
+  tapes: Record<string, { style: 'cassette' | 'phone'; label: string; brand?: string; length?: string; jingle?: boolean }>;
   berkas: Record<string, { years: string; motif: string; palette: string }>;
   /** identity cards: doc code → [name, habit, boat] */
   kenal: Record<string, [string, string, string]>;
@@ -23,8 +23,13 @@ export type CaseConfig = {
   bekal: [key: string, text: string, why: string][];
   tugas: [docCode: string, text: string][];
   /** home card copy */
-  card: { goal: string; audioHint: string; countdown: string; pill: string };
-  finale: {
+  card: {
+    goal: string; audioHint: string; countdown: string; pill: string; brief?: string[];
+    /** optional overrides for the home card (defaults are Nyewu's) */
+    when?: string; voice?: string; sound?: 'oars' | 'jingle'; chip?: string; pillLine?: string; doneLabel?: string;
+  };
+  /** Nyewu-style envelope finale. Optional: cases without it close via `closeOn`. */
+  finale?: {
     berkas: string;          // the locked berkas, e.g. "IX"
     unlockAfter: string;     // doc that opens it, e.g. "VIII-20"
     ritual: string;          // instructions doc
@@ -48,6 +53,22 @@ export type CaseConfig = {
   skinOptions?: Record<string, Record<string, unknown>>;
   /** optional: case has a final envelope (Nyewu-style). Absent → case ends when every puzzle is solved. */
   hasEnvelope?: boolean;
+  /** optional: solving this puzzle closes the case (counts as "sent" for stats, share cards, collective gates) */
+  closeOn?: { puzzle: string };
+  /** optional: typed documents. "olympia" = the radio's machine (raised g, ink-filled e); "plain" = any other machine */
+  typewriter?: Record<string, 'olympia' | 'plain'>;
+  /** optional: archival photos printed above a document (src under /public) */
+  photos?: Record<string, { src: string; caption: string; tall?: boolean }[]>;
+  /** optional: evidence-board strings between these documents glow (pairs of doc codes) */
+  boardLinks?: [string, string][];
+  /** optional: puzzle keys listed in Desk ▸ Pertanyaan (the case's open questions) */
+  questions?: string[];
+  /** optional: which Desk tabs this case shows (default: Nyewu's set) */
+  desk?: string[];
+  /** optional: envelope look for the "letter" skin */
+  letter?: { to: string; address: string; postmark: string };
+  /** optional: the album's "Kenapa stamp?" paragraph */
+  stampsWhy?: string;
 };
 
 export function skinOf(cfg: CaseConfig, code: string): SkinRow {

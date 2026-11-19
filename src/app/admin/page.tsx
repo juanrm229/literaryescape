@@ -31,6 +31,7 @@ export default async function Admin() {
               <span className="row-why">{r.status} · {r.docs} dok · {r.readers} readers · {r.sent} kabar sent</span>
             </Link></li>))}
           </ul>
+          <p className="desk-note"><Link href="/admin/cleanup" style={{ textDecoration: 'underline' }}>Data uji</Link>: bersihkan pembaca anonim dan meja co-op kosong.</p>
           <h3 className="sub-h">New case</h3>
           <AdminForm action={createCase} submit="Create draft">
             <label className="adm-l">Slug<input name="slug" placeholder="kotak-hitam" required /></label>

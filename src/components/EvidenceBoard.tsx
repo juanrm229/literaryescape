@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { haptic } from '@/lib/haptics';
+import { useUI } from './Shell';
 import { movePin, toggleString, unpin } from '@/app/actions';
 import type { Pin } from '@/db/schema';
 
@@ -14,7 +15,10 @@ const tilt = (id: string) => ((id.charCodeAt(0) + id.charCodeAt(id.length - 1)) 
  * The cork board. Drag notes around, tap one then another to tie a red string, tap a string's knot to cut it.
  * Everything is optimistic and saved in the background.
  */
-export function EvidenceBoard({ slug, pins: initialPins, strings: initialStrings, titles }: { slug: string; pins: Pin[]; strings: string[]; titles: Record<string, string> }) {
+export function EvidenceBoard({ slug, pins: initialPins, strings: initialStrings, glow: initialGlow = [], titles }: { slug: string; pins: Pin[]; strings: string[]; glow?: string[]; titles: Record<string, string> }) {
+  const { toast } = useUI();
+  const [glow, setGlow] = useState<string[]>(initialGlow);
+  useEffect(() => { setGlow(initialGlow); }, [initialGlow]);
   const [pins, setPins] = useState(initialPins);
   const [strings, setStrings] = useState(initialStrings);
   const [sel, setSel] = useState<string | null>(null);
@@ -60,7 +64,9 @@ export function EvidenceBoard({ slug, pins: initialPins, strings: initialStrings
     setStrings((s) => (on ? [...s, key] : s.filter((x) => x !== key)));
     setSel(null);
     haptic.stamp();
-    toggleString(slug, sel, d.id);
+    toggleString(slug, sel, d.id).then((r) => {
+      if (r.glow) { setGlow((g) => [...g, key]); haptic.unlock(); toast('<small>Papan bukti</small><b>Benang ini menyala.</b> Dua dokumen ini saling menjawab.', { ms: 3600 }); }
+    });
   };
   const remove = (id: string) => {
     setPins((ps) => ps.filter((q) => q.id !== id));
@@ -96,7 +102,7 @@ export function EvidenceBoard({ slug, pins: initialPins, strings: initialStrings
             const mx = (x1 + x2) / 2, my = Math.max(y1, y2) + 28 + Math.abs(x1 - x2) * 0.08; // a little sag
             return (
               <g key={k}>
-                <path d={`M${x1} ${y1} Q${mx} ${my} ${x2} ${y2}`} className="string" />
+                <path d={`M${x1} ${y1} Q${mx} ${my} ${x2} ${y2}`} className={`string${glow.includes(k) ? ' glow' : ''}`} />
                 <circle cx={(x1 + 2 * mx + x2) / 4} cy={(y1 + 2 * my + y2) / 4} r="9" className="knot" onClick={() => cut(k)} />
               </g>
             );
@@ -105,7 +111,7 @@ export function EvidenceBoard({ slug, pins: initialPins, strings: initialStrings
         {pins.map((p, i) => {
           const pos = at(p);
           return (
-            <div key={p.id} className={`note${sel === p.id ? ' sel' : ''}`} style={{ left: pos.left, top: pos.top, width: CARD, transform: `rotate(${tilt(p.id)}deg)` }}
+            <div key={p.id} className={`bnote${sel === p.id ? ' sel' : ''}`} style={{ left: pos.left, top: pos.top, width: CARD, transform: `rotate(${tilt(p.id)}deg)` }}
               onPointerDown={(e) => down(e, p)}>
               <span className="tack" style={{ background: PIN_COLORS[i % PIN_COLORS.length] }} />
               <q>{p.text}</q>

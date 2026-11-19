@@ -40,7 +40,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
     if (!p.sentAt) return no('belum dikirim', 403);
     const [{ n }] = await db.select({ n: count() }).from(schema.progress)
       .where(and(eq(schema.progress.caseId, c.id), isNotNull(schema.progress.sentAt), lte(schema.progress.sentAt, p.sentAt)));
-    svg = sentCardSvg({ caseNo: c.no, caseTitle: c.title, address: c.config.finale.address || 'Laut', names: Object.keys(p.data.placed).length, nth: Number(n), date: postDate(new Date(p.sentAt)), host, slug });
+    svg = sentCardSvg({ caseNo: c.no, caseTitle: c.title, address: c.config.finale?.address || 'Laut', names: Object.keys(p.data.placed).length, nth: Number(n), date: postDate(new Date(p.sentAt)), host, slug });
   } else {
     const [kind, ...rest] = k.split(':');
     if (!KINDS[kind] || !rest.length) return no('bad key', 400);

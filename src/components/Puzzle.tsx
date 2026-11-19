@@ -11,7 +11,7 @@ import type { PuzzleView } from '@/lib/puzzles';
 
 const KIND_LABEL: Record<string, string> = {
   text: 'Kata kunci', cipher: 'Sandi', padlock: 'Gembok', date: 'Tanggal', order: 'Urutan',
-  match: 'Pasangkan', hotspot: 'Tunjuk', frequency: 'Frekuensi',
+  match: 'Pasangkan', hotspot: 'Tunjuk', frequency: 'Frekuensi', memory: 'Uji ingatan',
 };
 
 type Submit = (answer: unknown) => void;
@@ -57,7 +57,7 @@ export function PuzzleCard({ slug, view }: { slug: string; view: PuzzleView }) {
       <h4 className="pz-title">{view.title}</h4>
       {view.promptHtml && <div className="pz-prompt" dangerouslySetInnerHTML={{ __html: view.promptHtml }} />}
       {solved ? (
-        <div className="pz-done">{stampSvg && <div className="pz-stamp" dangerouslySetInnerHTML={{ __html: stampSvg }} />}<p>{msg?.text || 'Terbuka.'}</p></div>
+        <div className="pz-done">{stampSvg && <div className="pz-stamp" dangerouslySetInnerHTML={{ __html: stampSvg }} />}<div className="pz-msgs">{(msg?.text || 'Terbuka.').split(/\n\s*\n/).map((t, i) => <p key={i} dangerouslySetInnerHTML={{ __html: inlineMd(t) }} />)}</div></div>
       ) : (
         <>
           <Widget slug={slug} view={view} submit={submit} pending={pending} />
@@ -87,9 +87,42 @@ function Widget({ slug, view, submit, pending }: { slug: string; view: PuzzleVie
     case 'match': return <MatchPairs left={(c.left as { id: string; text: string }[]) || []} right={(c.right as { id: string; text: string }[]) || []} submit={submit} pending={pending} />;
     case 'hotspot': return <Hotspot image={c.image as string | undefined} art={view.artSvg} alt={(c.alt as string) || ''} submit={submit} pending={pending} />;
     case 'cipher': return <Cipher text={(c.ciphertext as string) || ''} submit={submit} pending={pending} />;
+    case 'memory': return <Memory statements={(c.statements as string[]) || []} submit={submit} pending={pending} />;
     case 'frequency': return <Frequency slug={slug} pkey={view.key} min={Number(c.min) || 87.5} max={Number(c.max) || 108} submit={submit} pending={pending} />;
     default: return <TextLock placeholder={(c.placeholder as string) || 'Jawaban…'} submit={submit} pending={pending} />;
   }
+}
+
+/** Tiny, safe markdown for result messages: escape, then **bold** and *italic*. */
+const inlineMd = (s: string) => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/\*(.+?)\*/g, '<i>$1</i>');
+
+/**
+ * Uji Ingatan: one statement at a time, no back button, three answers. The set goes to the server only
+ * when the last one is answered — the key is never in the browser.
+ */
+function Memory({ statements, submit, pending }: { statements: string[]; submit: Submit; pending: boolean }) {
+  const [answers, setAnswers] = useState<string[]>([]);
+  const i = answers.length;
+  const pick = (a: 'b' | 's' | 't') => {
+    haptic.tap(); audio.tone(a === 'b' ? 740 : a === 's' ? 520 : 400, 0.05, 0.05);
+    const next = [...answers, a];
+    setAnswers(next);
+    if (next.length === statements.length) submit(next);
+  };
+  if (i >= statements.length) return <p className="mem-wait">{pending ? 'Mencocokkan dengan arsip…' : 'Terkirim.'}</p>;
+  return (
+    <div className="mem">
+      <div className="mem-bar"><i style={{ width: `${(i / statements.length) * 100}%` }} /></div>
+      <p className="mem-n">Pernyataan {i + 1} dari {statements.length}</p>
+      <p className="mem-q" key={i}>{statements[i]}</p>
+      <div className="mem-a">
+        <button type="button" onClick={() => pick('b')}>Benar</button>
+        <button type="button" onClick={() => pick('s')}>Salah</button>
+        <button type="button" className="t" onClick={() => pick('t')}>Tidak tahu</button>
+      </div>
+      <p className="mem-note">Tidak ada tombol kembali. Jawab dari ingatan.</p>
+    </div>
+  );
 }
 
 /* ------------------------------------------------------------------ */

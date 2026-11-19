@@ -34,7 +34,7 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
         days: cfg.finale?.windu ? daysUntil(parseYMD(cfg.finale.windu), now) : 0,
         docs: c.docs.length, berkas: c.berkas.length,
         pct: Math.round((rl.readCount / Math.max(1, rl.readable.length)) * 100), stamps: rl.stampCount,
-        accepted: !!p.acceptedAt, sent: !!p.sentAt, voices: await sentCount(c.id),
+        accepted: !!p.acceptedAt, sent: !!p.sentAt, voices: await sentCount(c.id), brief: cfg.card?.brief ?? [], when: cfg.card?.when ?? 'THU 8 FEB 1979', voice: cfg.card?.voice ?? 'K', sound: cfg.card?.sound ?? 'oars', chip: cfg.card?.chip ?? '', pillLine: cfg.card?.pillLine ?? '', doneLabel: cfg.card?.doneLabel ?? '',
       });
     } else {
       const cfg = r.config as Partial<CaseConfig>;

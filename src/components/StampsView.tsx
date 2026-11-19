@@ -3,10 +3,12 @@
 import { useState } from 'react';
 import { ShareButton } from './ShareButton';
 
+const DEFAULT_WHY = `Di Pakabaran, perangko pernah jadi jangkar: Sumi menempelkannya tiap Kamis, 29 tahun, di amplop beralamat Laut, dan suratnya menahan Kasan di perahu. Di sini perangko bekerja ke arah sebaliknya. Stamp berkas = bukti kamu sudah membaca. Kartu kenal = bukti kamu sudah mengenal. Dan di Berkas IX, stamp yang kamu tulis sendiri adalah kabar: surat terakhir ke alamat yang sama, kali ini untuk melepaskan.`;
+
 export type StampItem = { key: string; got: boolean; html: string; name: string; desc: string; href?: string; share?: string };
 export type Collection = { key: string; name: string; desc: string; items: StampItem[] };
 
-export function StampsView({ colls, startColl, startKey }: { colls: Collection[]; startColl: string; startKey?: string }) {
+export function StampsView({ colls, startColl, startKey, why }: { colls: Collection[]; startColl: string; startKey?: string; why?: string }) {
   const [ck, setCk] = useState(colls.some((c) => c.key === startColl) ? startColl : colls[0].key);
   const [featKey, setFeatKey] = useState<string | undefined>(startKey);
   const ci = colls.findIndex((c) => c.key === ck);
@@ -30,7 +32,7 @@ export function StampsView({ colls, startColl, startKey }: { colls: Collection[]
               onClick={() => setFeatKey(x.key)} dangerouslySetInnerHTML={{ __html: x.html }} />
           ))}
         </div>
-        <div className="al-why"><b>Kenapa stamp?</b>Di Pakabaran, perangko pernah jadi jangkar: Sumi menempelkannya tiap Kamis, 29 tahun, di amplop beralamat Laut, dan suratnya menahan Kasan di perahu. Di sini perangko bekerja ke arah sebaliknya. Stamp berkas = bukti kamu sudah membaca. Kartu kenal = bukti kamu sudah mengenal. Dan di Berkas IX, stamp yang kamu tulis sendiri adalah kabar: surat terakhir ke alamat yang sama, kali ini untuk melepaskan.</div>
+        <div className="al-why"><b>Kenapa stamp?</b>{why ?? DEFAULT_WHY}</div>
       </div>
       <div className="selector">
         {order.map((c) => {

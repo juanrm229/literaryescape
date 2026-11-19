@@ -17,6 +17,7 @@ export default async function Rekaman({ params }: { params: Promise<{ slug: stri
   const { slug } = await params;
   const { c, p, r } = await casePage(slug);
   const f = c.config.finale;
+  if (!f) redirect(`/c/${slug}`);
   if (!p.sentAt) redirect(`/c/${slug}/kabar`);
   const tape = c.docs.find((d) => d.code === f.tape)!;
   const epi = c.docs.find((d) => d.code === f.epilogue)!;

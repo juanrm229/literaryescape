@@ -41,9 +41,10 @@ export default async function Archive({ params, searchParams }: { params: Promis
         <div className="meta-strip">
           <span>{r.readCount}/{r.readable.length} read</span>
           <span>{r.stampCount}/{c.berkas.length} stamps</span>
-          <span className={days <= 14 ? 'hot' : ''}>windu · {days > 0 ? `${days}d` : days === 0 ? 'tonight' : 'passed'}</span>
+          {finale ? <span className={days <= 14 ? 'hot' : ''}>windu · {days > 0 ? `${days}d` : days === 0 ? 'tonight' : 'passed'}</span>
+            : <span>{c.puzzles.filter((z) => p.data.solved?.[z.key]).length}/{c.puzzles.length} terjawab</span>}
         </div>
-        <p className="kliwon-note">{preview ? 'Admin preview — this case is not live yet.' : `Next malam Jumat Kliwon: ${nextK ? fmt(nextK) : '—'}`}</p>
+        {(preview || finale) && <p className="kliwon-note">{preview ? 'Admin preview — this case is not live yet.' : `Next malam Jumat Kliwon: ${nextK ? fmt(nextK) : '—'}`}</p>}
 
         {c.berkas.map((b, bi) => {
           const open = r.berkasUnlocked(b.code);
@@ -112,7 +113,10 @@ export default async function Archive({ params, searchParams }: { params: Promis
       <div className="bar2">
         {r.nextUnread
           ? <Link className="cta" href={`/c/${c.slug}/d/${r.nextUnread.code}`}>{p.data.read['0-01'] ? 'Continue' : 'Start reading'} <small>{r.nextUnread.code}</small></Link>
-          : r.kabarUnlocked ? <Link className="cta yellow" href={`/c/${c.slug}/kabar`}>Kirim kabar</Link> : <span className="cta dim">Archive complete</span>}
+          : r.kabarUnlocked ? <Link className="cta yellow" href={`/c/${c.slug}/kabar`}>Kirim kabar</Link>
+            : p.sentAt ? <span className="cta dim">Perkara ditutup</span>
+            : !finale && c.config.questions?.length ? <Link className="cta" href={`/c/${c.slug}/desk/tanya`}>Archive complete <small>Pertanyaan</small></Link>
+            : <span className="cta dim">Archive complete</span>}
       </div>
     </div>
   );

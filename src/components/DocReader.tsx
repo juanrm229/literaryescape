@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { PuzzleCard } from './Puzzle';
 import { PinSelection } from './PinSelection';
+import { Loupe } from './Loupe';
 import type { PuzzleView } from '@/lib/puzzles';
 import { useUI } from './Shell';
 import { useTape } from './useTape';
@@ -17,8 +18,29 @@ const NO_PUZZLES: PuzzleView[] = [];
 
 export function DocReader({ slug, code, skin, html, fresh, onTapeEnd, puzzles = NO_PUZZLES }: { slug: string; code: string; skin: string; html: string; fresh?: boolean; onTapeEnd?: (code: string) => void; puzzles?: PuzzleView[] }) {
   const ref = useRef<HTMLElement>(null);
-  const { scroller, toast } = useUI();
-  const tape = useTape(ref, scroller, onTapeEnd);
+  const { scroller, toast, sheet } = useUI();
+  // tapes that end on the station jingle play it when the transcript runs out
+  const onEnd = useCallback((c: string) => {
+    if (ref.current?.querySelector<HTMLElement>(`.tape[data-tape="${CSS.escape(c)}"]`)?.dataset.jingle) setTimeout(() => audio.jingle(), 600);
+    onTapeEnd?.(c);
+  }, [onTapeEnd]);
+  const tape = useTape(ref, scroller, onEnd);
+  const [typed, setTyped] = useState(false);
+  const [fin, setFin] = useState<'off' | 'on' | 'done'>('off');
+  // ::fin — when the final line scrolls into view: five piano notes, then black
+  useEffect(() => {
+    const el = ref.current?.querySelector('[data-fin]');
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      audio.jingle(); haptic.unlock();
+      setTimeout(() => setFin('on'), 1900);
+    }, { threshold: 1 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [html]);
+  useEffect(() => { setTyped(!!ref.current?.querySelector('.tw')); }, [html]);
   // locks embedded in the paper with ::puzzle[key] — mounted into their slots after render
   const [slots, setSlots] = useState<{ el: Element; view: PuzzleView }[]>([]);
   useEffect(() => {
@@ -60,6 +82,10 @@ export function DocReader({ slug, code, skin, html, fresh, onTapeEnd, puzzles = 
         act.classList.add('on'); synth.speak(u);
       }
       if (a === 'gal-open') act.classList.toggle('zoom');
+      if (a === 'photo-open') {
+        haptic.tap();
+        sheet(<figure className="photo-full"><img src={act.dataset.src} alt={act.dataset.cap} /><figcaption>{act.dataset.cap}</figcaption></figure>, 'photo-sheet');
+      }
       if (a === 'app-open' || a === 'app-back') {
         const ph = act.closest<HTMLElement>('[data-phone]'); if (!ph) return;
         const home = ph.querySelector<HTMLElement>('[data-app-home]');
@@ -79,14 +105,19 @@ export function DocReader({ slug, code, skin, html, fresh, onTapeEnd, puzzles = 
   };
   const onKey = (e: React.KeyboardEvent) => {
     const t = e.target as HTMLElement;
-    if ((e.key === 'Enter' || e.key === ' ') && t.matches('[data-act="flip"], .map-pin')) { e.preventDefault(); t.dispatchEvent(new MouseEvent('click', { bubbles: true })); }
+    if ((e.key === 'Enter' || e.key === ' ') && t.matches('[data-act="flip"], [data-act="photo-open"], .map-pin')) { e.preventDefault(); t.dispatchEvent(new MouseEvent('click', { bubbles: true })); }
   };
 
   return (
     <>
+      <div className="doc-wrap">
       <article ref={ref} className={`doc skin-${skin}`} data-doc={code} onClick={onClick} onKeyDown={onKey} dangerouslySetInnerHTML={{ __html: html }} />
       {slots.map((s) => createPortal(<PuzzleCard slug={slug} view={s.view} />, s.el, s.view.key))}
       <PinSelection slug={slug} code={code} article={ref} />
+      {typed && <Loupe article={ref} />}
+      </div>
+      {fin === 'on' && typeof document !== 'undefined' && document.getElementById('screen') && createPortal(
+        <button className="blackout" onClick={() => setFin('done')} aria-label="Tutup"><span>Sampun, sampun, cekap.</span></button>, document.getElementById('screen')!)}
     </>
   );
 }

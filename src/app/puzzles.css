@@ -92,3 +92,17 @@
 .fq-range { width: 100%; margin: 12px 0 0; accent-color: #ff5a1f; }
 .fq-fine { display: flex; gap: 8px; justify-content: center; margin-top: 6px; }
 .fq-fine button { padding: 8px 14px; border-radius: 10px; background: #1e1e1e; font: 500 12px/1 var(--mono); color: #ccc; }
+
+/* memory test */
+.mem { margin-top: 6px; }
+.mem-bar { height: 4px; border-radius: 2px; background: #e6e1d4; overflow: hidden; }
+.mem-bar i { display: block; height: 100%; background: #2c4b55; transition: width .3s; }
+.mem-n { margin: 10px 0 4px; font: 500 11px/1 var(--mono); color: #8a8478; text-transform: uppercase; letter-spacing: .1em; }
+.mem-q { min-height: 3.2em; margin: 0 0 14px; font: 500 19px/1.35 var(--serif); animation: memIn .25s ease-out; }
+@keyframes memIn { from { opacity: 0; transform: translateX(14px); } }
+.mem-a { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.mem-a button { height: 48px; border-radius: 12px; background: #f2f0e8; color: #111; font: 600 15px/1 var(--sans); }
+.mem-a button.t { grid-column: 1 / -1; background: transparent; color: #c9c5bb; border: 1px solid #4a4740; }
+.mem-a button:active { transform: scale(.97); }
+.mem-note, .mem-wait { margin: 10px 0 0; font: 400 11.5px/1.4 var(--mono); color: #8a8478; }
+.pz-msgs p { margin: 0 0 .7em; }

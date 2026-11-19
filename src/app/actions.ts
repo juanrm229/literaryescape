@@ -7,6 +7,8 @@ import { gateEnv, getViewer, loadCase, loadProgress, saveProgress, rules, loadDo
 import { berkasStamp, kenalStamp, stamp } from '@/lib/stamps';
 import { roomFor, mergeSave, feedLine, say, canRead, leaveRoom } from '@/lib/coop';
 import { notesFor, redact } from '@/lib/notes';
+import { glowing } from '@/lib/board';
+import { memoryResult, type MemorySolution } from '@/lib/puzzles';
 import { nameCandidates, tembangStanzas } from '@/lib/text';
 
 /**
@@ -142,7 +144,7 @@ export async function tembangNext(slug: string, line?: number) {
   const { c, p, save, ev } = await ctx(slug);
   const total = await totalAnswers(c.id);
   if (p.data.placed.length !== total || p.data.recited.length !== total) return { ok: false };
-  const md = (await loadDocMd(c.id, c.config.finale.song)) ?? '';
+  const md = (c.config.finale ? await loadDocMd(c.id, c.config.finale.song) : '') ?? '';
   const lines = tembangStanzas(md).reduce((n, s) => n + s.lines.length, 0);
   const target = Math.min(lines, Math.max(p.data.tembangLine, typeof line === 'number' ? Math.floor(line) : p.data.tembangLine + 1));
   await save({ data: { ...p.data, tembangLine: target } });
@@ -157,7 +159,7 @@ export async function sendKabar(slug: string): Promise<SendResult> {
   const total = await totalAnswers(c.id);
   if (p.data.placed.length !== total) return { ok: false, reason: 'incomplete' };
   if (p.data.recited.length !== total) return { ok: false, reason: 'recite' };
-  const md = (await loadDocMd(c.id, c.config.finale.song)) ?? '';
+  const md = (c.config.finale ? await loadDocMd(c.id, c.config.finale.song) : '') ?? '';
   const lines = tembangStanzas(md).reduce((n, s) => n + s.lines.length, 0);
   if (p.data.tembangLine < lines) return { ok: false, reason: 'tembang' };
   await save({ data: p.data, sentAt: new Date() });
@@ -195,6 +197,10 @@ function checkAnswer(kind: string, sol: Record<string, unknown>, answer: unknown
       const a = answer as { x: number; y: number };
       return !!a && Math.hypot(a.x - t.x, a.y - t.y) <= t.r;
     }
+    case 'memory': {
+      const n = ((sol.truth as unknown[]) || []).length;
+      return Array.isArray(answer) && answer.length === n && answer.every((x) => x === 'b' || x === 's' || x === 't');
+    }
     case 'frequency': {
       const t = sol as { freq: number; tol?: number };
       return typeof answer === 'number' && Math.abs(answer - t.freq) <= (t.tol ?? 0.15);
@@ -219,14 +225,21 @@ export async function solvePuzzle(slug: string, key: string, answer: unknown): P
   const now = new Date().toISOString();
   if (checkAnswer(pz.kind, sol, answer)) {
     const data = { ...p.data, solved: { ...(p.data.solved ?? {}), [key]: now } };
-    await save({ data });
+    if (pz.kind === 'memory') data.memory = { ...(p.data.memory ?? {}), [key]: answer as string[] };
+    // some cases close on a final lock instead of an envelope
+    const closes = c.config.closeOn?.puzzle === key && !p.sentAt;
+    await save(closes ? { data, sentAt: new Date() } : { data });
+    if (closes) await ev('sent', { minutes: p.acceptedAt ? Math.round((Date.now() - new Date(p.acceptedAt).getTime()) / 60000) : null });
     await ev('puzzle_solve', { key, attempts: attempts + 1, hints: p.data.pzHints?.[key] ?? 0 });
     const reward = (pz.reward || {}) as { message?: string; stamp?: { title: string; sub?: string; motif?: string; palette?: string; year?: string } };
     const stampSvg = reward.stamp ? stamp({ title: reward.stamp.title, sub: reward.stamp.sub || meta.title, motif: reward.stamp.motif || 'key', palette: reward.stamp.palette || 'night', year: reward.stamp.year || '' }) as string : undefined;
-    return { ok: true, message: reward.message || 'Terbuka.', stamp: stampSvg, stampTitle: reward.stamp?.title };
+    const message = pz.kind === 'memory' ? memoryResult(sol as MemorySolution, answer as string[]).message : reward.message || 'Terbuka.';
+    return { ok: true, message, stamp: stampSvg, stampTitle: reward.stamp?.title };
   }
   const replies = (sol.replies || {}) as Record<string, string>;
-  const specific = typeof answer === 'string' ? replies[norm(answer)] : undefined;
+  // a specific reply when the guess names something we anticipated ("pak darno" → darno)
+  const guess = typeof answer === 'string' ? norm(answer) : '';
+  const specific = guess ? (replies[guess] ?? Object.entries(replies).find(([k]) => { const nk = norm(k); return nk.length >= 4 && guess.includes(nk); })?.[1]) : undefined;
   await save({ data: { ...p.data, attempts: { ...(p.data.attempts ?? {}), [key]: attempts + 1 }, lastWrong: { ...(p.data.lastWrong ?? {}), [key]: now } } });
   await ev('puzzle_wrong', { key, input: typeof answer === 'string' ? norm(answer).slice(0, 40) : JSON.stringify(answer).slice(0, 80) });
   return { ok: false, message: specific || (sol.wrongMessage as string) || 'Belum.' };
@@ -294,7 +307,7 @@ export async function unpin(slug: string, id: string) {
 
 /** Tie (or untie) a red string between two pins. */
 export async function toggleString(slug: string, a: string, b: string) {
-  const { p, save, ev } = await ctx(slug);
+  const { c, p, save, ev } = await ctx(slug);
   const ids = new Set((p.data.pins ?? []).map((q) => q.id));
   if (a === b || !ids.has(a) || !ids.has(b)) return { ok: false };
   const key = [a, b].sort().join('|');
@@ -302,7 +315,7 @@ export async function toggleString(slug: string, a: string, b: string) {
   const on = !cur.includes(key);
   await save({ data: { ...p.data, strings: on ? [...cur, key] : cur.filter((s) => s !== key) } });
   if (on) await ev('string', {});
-  return { ok: true, on };
+  return { ok: true, on, glow: on && glowing(c.config.boardLinks, p.data.pins ?? [], key) };
 }
 
 /* ------------------------------------------------------------------ */

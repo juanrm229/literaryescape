@@ -1,0 +1,1173 @@
+{
+  "case": {
+    "slug": "case-02",
+    "no": "02",
+    "title": "Episode 41",
+    "tagline": "Sandiwara yang ditulis sebelum gadisnya hilang",
+    "hook": "Kota itu ingat hujan malam itu. Malam itu tidak hujan setetes pun.",
+    "author": "Disusun oleh Laras Ayuning Sutikno, Semarang",
+    "status": "live",
+    "sort": 2
+  },
+  "config": {
+    "contentVersion": 1,
+    "skins": {
+      "0-01": [
+        "note",
+        "Catatan penyusun",
+        "report"
+      ],
+      "0-02": [
+        "rules",
+        "Petunjuk",
+        "report"
+      ],
+      "0-03": [
+        "ledger",
+        "Inventaris temuan",
+        "table"
+      ],
+      "I-01": [
+        "newspaper",
+        "Kliping koran",
+        "news"
+      ],
+      "I-02": [
+        "gov",
+        "Laporan polisi",
+        "report"
+      ],
+      "I-03": [
+        "register",
+        "Data BMG & PU",
+        "table"
+      ],
+      "I-04": [
+        "notulen",
+        "Berita acara",
+        "notebook"
+      ],
+      "I-05": [
+        "testimony",
+        "Surat ketikan",
+        "letter"
+      ],
+      "I-06": [
+        "ledger",
+        "KK & rapor",
+        "table"
+      ],
+      "I-07": [
+        "register",
+        "Papan jadwal",
+        "table"
+      ],
+      "I-08": [
+        "testimony",
+        "Nota toko emas",
+        "quote"
+      ],
+      "I-09": [
+        "gov",
+        "Surat polisi",
+        "report"
+      ],
+      "I-10": [
+        "newspaper",
+        "Kliping koran",
+        "news"
+      ],
+      "II-01": [
+        "brochure",
+        "Brosur radio",
+        "web"
+      ],
+      "II-02": [
+        "register",
+        "Jadwal siaran",
+        "table"
+      ],
+      "II-03": [
+        "ledger",
+        "Daftar kru & formulir",
+        "table"
+      ],
+      "II-04": [
+        "logbook",
+        "Buku log rekaman",
+        "notebook"
+      ],
+      "II-05": [
+        "script",
+        "Draf naskah",
+        "thesis"
+      ],
+      "II-06": [
+        "logbook",
+        "Buku kendaraan",
+        "notebook"
+      ],
+      "II-07": [
+        "logbook",
+        "Buku siaran",
+        "notebook"
+      ],
+      "II-08": [
+        "journal",
+        "Buku harian",
+        "notebook"
+      ],
+      "II-09": [
+        "note",
+        "Memo teknis",
+        "report"
+      ],
+      "II-10": [
+        "gov",
+        "Surat teguran · inventaris",
+        "report"
+      ],
+      "III-01": [
+        "script",
+        "Sinopsis",
+        "thesis"
+      ],
+      "IV-02": [
+        "note",
+        "Surat kaleng",
+        "letter"
+      ],
+      "IV-05": [
+        "gov",
+        "Surat bersama",
+        "letter"
+      ],
+      "IV-08": [
+        "gov",
+        "Surat tanpa nama",
+        "letter"
+      ],
+      "IV-11": [
+        "note",
+        "Surat tangan",
+        "letter"
+      ],
+      "IV-12": [
+        "register",
+        "Rekap surat",
+        "table"
+      ],
+      "V-01": [
+        "newspaper",
+        "Kliping koran",
+        "news"
+      ],
+      "V-02": [
+        "logbook",
+        "Buku kamling",
+        "notebook"
+      ],
+      "V-03": [
+        "gov",
+        "Laporan · kliping",
+        "report"
+      ],
+      "V-04": [
+        "notulen",
+        "Berita acara",
+        "notebook"
+      ],
+      "V-05": [
+        "gov",
+        "Laporan kecelakaan",
+        "report"
+      ],
+      "V-06": [
+        "newspaper",
+        "Kliping koran",
+        "news"
+      ],
+      "V-07": [
+        "gov",
+        "Surat jalan · surat utang",
+        "report"
+      ],
+      "V-08": [
+        "note",
+        "Surat tangan",
+        "letter"
+      ],
+      "V-09": [
+        "journal",
+        "Buku saku",
+        "notebook"
+      ],
+      "V-10": [
+        "newspaper",
+        "Iklan duka",
+        "news"
+      ],
+      "VI-01": [
+        "thread",
+        "Utas",
+        "web"
+      ],
+      "VI-02": [
+        "thread",
+        "Balasan",
+        "chat"
+      ],
+      "VI-03": [
+        "tape-phone",
+        "Podcast",
+        "voice"
+      ],
+      "VI-04": [
+        "thread",
+        "Unggahan Facebook",
+        "web"
+      ],
+      "VI-05": [
+        "newspaper",
+        "Berita daring",
+        "web"
+      ],
+      "VI-06": [
+        "note",
+        "Catatan penyusun",
+        "report"
+      ],
+      "VII-01": [
+        "journal",
+        "Jurnal",
+        "notebook"
+      ],
+      "VII-02": [
+        "tape-phone",
+        "Wawancara",
+        "voice"
+      ],
+      "VII-03": [
+        "tape-phone",
+        "Wawancara",
+        "voice"
+      ],
+      "VII-04": [
+        "tape-phone",
+        "Panggilan video",
+        "voice"
+      ],
+      "VII-05": [
+        "notulen",
+        "Wawancara (tidak direkam)",
+        "notebook"
+      ],
+      "VIII-01": [
+        "rules",
+        "Petunjuk",
+        "report"
+      ],
+      "VIII-02": [
+        "blank",
+        "Uji ingatan",
+        "question"
+      ],
+      "VIII-03": [
+        "register",
+        "Kunci jawaban",
+        "table"
+      ],
+      "VIII-04": [
+        "blank",
+        "Hasil",
+        "question"
+      ],
+      "IX-01": [
+        "tape",
+        "Kaset C60",
+        "tape"
+      ],
+      "IX-02": [
+        "tape-phone",
+        "Rekaman ponsel",
+        "voice"
+      ],
+      "IX-03": [
+        "journal",
+        "Surat · catatan",
+        "letter"
+      ],
+      "IX-04": [
+        "journal",
+        "Surat · balasan",
+        "letter"
+      ],
+      "IX-05": [
+        "note",
+        "Penutup",
+        "report"
+      ]
+    },
+    "skinPrefixes": {
+      "III-": [
+        "script",
+        "Naskah sandiwara",
+        "thesis"
+      ],
+      "IV-": [
+        "letter",
+        "Surat pendengar",
+        "letter"
+      ]
+    },
+    "tapes": {
+      "IX-01": {
+        "style": "cassette",
+        "label": "41 — R.",
+        "brand": "MAXELL · C60",
+        "jingle": true
+      },
+      "VI-03": {
+        "style": "phone",
+        "label": "Lorong Gelap · Ep. 112",
+        "length": "18:40–27:15"
+      },
+      "VII-02": {
+        "style": "phone",
+        "label": "Rekaman · Kalilanang, 7 Mar 2024",
+        "length": ""
+      },
+      "VII-03": {
+        "style": "phone",
+        "label": "Rekaman · Purwokerto, 18 Jun 2024",
+        "length": ""
+      },
+      "VII-04": {
+        "style": "phone",
+        "label": "Panggilan video · Batam",
+        "length": ""
+      },
+      "IX-02": {
+        "style": "phone",
+        "label": "Dapur · 27 Okt 2025",
+        "length": ""
+      }
+    },
+    "berkas": {
+      "0": {
+        "years": "2023",
+        "motif": "door",
+        "palette": "night"
+      },
+      "I": {
+        "years": "1982",
+        "motif": "wave",
+        "palette": "sea"
+      },
+      "II": {
+        "years": "1980–1983",
+        "motif": "tape",
+        "palette": "slate"
+      },
+      "III": {
+        "years": "1982–1983",
+        "motif": "book",
+        "palette": "ochre"
+      },
+      "IV": {
+        "years": "1983",
+        "motif": "envelope",
+        "palette": "rust"
+      },
+      "V": {
+        "years": "1983–2005",
+        "motif": "stone",
+        "palette": "olive"
+      },
+      "VI": {
+        "years": "2018",
+        "motif": "lighthouse",
+        "palette": "red"
+      },
+      "VII": {
+        "years": "2023–2025",
+        "motif": "door",
+        "palette": "plum"
+      },
+      "VIII": {
+        "years": "2026",
+        "motif": "key",
+        "palette": "bone"
+      },
+      "IX": {
+        "years": "1983–2026",
+        "motif": "tape",
+        "palette": "green"
+      }
+    },
+    "kenal": {},
+    "hints": [
+      "Kertas tidak bisa berbohong semudah orang. Perhatikan tanggal, cuaca, mesin tik (0-01).",
+      "Cocokkan tanggal di buku log rekaman (II-04) dengan tanggal Ratri hilang. Mana yang lebih dulu?",
+      "Kaca pembesar ada di setiap dokumen ketikan. Mulai dari surat kesaksian I-05, lalu inventaris II-10.",
+      "\"Lelaki pincang bercaping\" adalah kiasan. Siapa di Wanasari yang berjalan dengan tongkat?",
+      "Penyusun arsip menyebut ibunya beberapa kali, sambil lalu. Kumpulkan: tangan, lagu, jembatan, tanggal lahir."
+    ],
+    "bekal": [
+      [
+        "catat",
+        "Siapkan catatan: jam, tanggal, siapa di mana.",
+        "Laras menyarankan ini di 0-02. Malam 17 Agustus 1982 terjadi dalam hitungan menit."
+      ],
+      [
+        "kaca",
+        "Kaca pembesar siap.",
+        "Dokumen ketikan punya tombol Kaca pembesar. Ada satu pertanyaan yang hanya bisa dijawab dengan itu."
+      ],
+      [
+        "lupa",
+        "Lupakan utas dan podcast yang pernah kamu dengar.",
+        "Akan lebih sulit daripada yang kamu kira. Itu intinya."
+      ],
+      [
+        "suara",
+        "Nyalakan suara.",
+        "Ada satu kaset yang tidak pernah disiarkan. Dan ada lima nada piano."
+      ]
+    ],
+    "tugas": [
+      [
+        "0-03",
+        "Lihat apa yang ditemukan di gudang RSN Suwara."
+      ],
+      [
+        "I-03",
+        "Cek cuaca malam itu."
+      ],
+      [
+        "I-05",
+        "Perbesar surat kesaksian anonim."
+      ],
+      [
+        "II-04",
+        "Cocokkan tanggal rekaman dengan tanggal Ratri hilang."
+      ],
+      [
+        "III-05",
+        "Temukan \"lelaki pincang bercaping\"."
+      ],
+      [
+        "V-07",
+        "Bandingkan nomor polisi truk."
+      ],
+      [
+        "VIII-02",
+        "Kerjakan Uji Ingatan, dari ingatan."
+      ],
+      [
+        "@sent",
+        "Jawab: siapa Ratri sekarang?"
+      ]
+    ],
+    "card": {
+      "goal": "Seorang gadis hilang di pasar malam. Lima bulan kemudian, kota mendengar suaranya di radio setiap Kamis malam.",
+      "audioHint": "Suara Rara Lintang, episode 1. Direkam Juli 1982.",
+      "countdown": "Episode 41 dibatalkan pukul 17.30. Seluruh kota menunggu di depan radio dan yang terdengar lagu-lagu daerah.",
+      "pill": "Belum pernah disiarkan",
+      "when": "SEL 17 AGT 1982",
+      "voice": "R",
+      "sound": "jingle",
+      "chip": "KAM 13 OKT 1983",
+      "pillLine": "satu kaset yang tidak pernah diputar",
+      "doneLabel": "found where Ratri went",
+      "brief": [
+        "73 dokumen dalam 10 berkas: kliping, laporan polisi, buku log studio, naskah sandiwara, surat pendengar, utas viral, wawancara, kaset.",
+        "Baca berurutan. Berkas berikutnya terbuka setelah dokumen terakhir berkas sebelumnya.",
+        "Tidak semua dokumen jujur. Dokumen ketikan bisa diperbesar dengan kaca pembesar.",
+        "Desk ▸ Pertanyaan menyimpan enam pertanyaan. Arsip tidak menjawabnya langsung.",
+        "Berkas VIII menguji ingatanmu. Berkas IX terkunci oleh satu pertanyaan: siapa Ratri sekarang?"
+      ]
+    },
+    "endings": {
+      "before": "",
+      "incomplete": "",
+      "after": ""
+    },
+    "replies": {},
+    "gates": {
+      "VIII-03": [
+        {
+          "type": "puzzle",
+          "key": "memori"
+        }
+      ],
+      "VIII-04": [
+        {
+          "type": "puzzle",
+          "key": "memori"
+        }
+      ],
+      "IX": [
+        {
+          "type": "sequential"
+        },
+        {
+          "type": "puzzle",
+          "key": "ratri"
+        }
+      ]
+    },
+    "closeOn": {
+      "puzzle": "ratri"
+    },
+    "typewriter": {
+      "I-05": "olympia",
+      "II-05": "olympia",
+      "III-01": "olympia",
+      "III-02": "olympia",
+      "III-03": "olympia",
+      "III-04": "olympia",
+      "III-05": "olympia",
+      "III-06": "olympia",
+      "III-07": "olympia",
+      "III-08": "olympia",
+      "I-02": "plain",
+      "I-09": "plain",
+      "II-10": "plain",
+      "IV-05": "plain",
+      "IV-08": "plain",
+      "V-03": "plain"
+    },
+    "photos": {
+      "0-01": [
+        {
+          "src": "/cases/case-02/P01.webp",
+          "caption": "Tiga lemari besi di gudang RSN Suwara, 15 Maret 2023."
+        }
+      ],
+      "0-03": [
+        {
+          "src": "/cases/case-02/P02.webp",
+          "caption": "Kaleng film 16 mm, label \"41\". Isinya hanya secarik kertas."
+        },
+        {
+          "src": "/cases/case-02/P03.webp",
+          "caption": "Pas foto 3×4, terselip di buku log rekaman Juli 1982.",
+          "tall": true
+        }
+      ],
+      "I-01": [
+        {
+          "src": "/cases/case-02/P04.webp",
+          "caption": "Pasar malam alun-alun Wanasari, 17 Agustus 1982. Dokumentasi panitia."
+        }
+      ],
+      "I-02": [
+        {
+          "src": "/cases/case-02/P05.webp",
+          "caption": "Barang bukti: selendang hijau di pagar jembatan sisi timur, 18 Agustus 1982, 06.30."
+        }
+      ],
+      "I-07": [
+        {
+          "src": "/cases/case-02/P07.webp",
+          "caption": "Papan jadwal di ruang tunggu Stasiun Wanasari."
+        }
+      ],
+      "I-08": [
+        {
+          "src": "/cases/case-02/P08.webp",
+          "caption": "Nota no. 0384, terlipat di dompet kain Bu Sumiyati."
+        }
+      ],
+      "I-10": [
+        {
+          "src": "/cases/case-02/P06.webp",
+          "caption": "Penyisiran Kali Lanang, hari kedelapan. Foto koran."
+        }
+      ],
+      "II-01": [
+        {
+          "src": "/cases/case-02/P09.webp",
+          "caption": "Gedung RSN Suara Wanasari, Jl. Pemuda 17, 1980."
+        }
+      ],
+      "II-04": [
+        {
+          "src": "/cases/case-02/P10.webp",
+          "caption": "Studio rekaman RSN Suwara."
+        }
+      ],
+      "II-05": [
+        {
+          "src": "/cases/case-02/P11.webp",
+          "caption": "Halaman 2 draf episode 10. Dua tangan di pinggir halaman.",
+          "tall": true
+        }
+      ],
+      "II-06": [
+        {
+          "src": "/cases/case-02/P14.webp",
+          "caption": "Colt putih AA 1417 W. Foto tanpa tanggal dari map \"Arsip Pribadi H.S.\"."
+        }
+      ],
+      "II-10": [
+        {
+          "src": "/cases/case-02/P12.webp",
+          "caption": "Olympia SM9 hijau, lemari 3, 2023."
+        },
+        {
+          "src": "/cases/case-02/P13.webp",
+          "caption": "Diketik ulang dengan pita baru, diperbesar: \"e\", \"g\", \"e\"."
+        }
+      ],
+      "IV-01": [
+        {
+          "src": "/cases/case-02/P15.webp",
+          "caption": "Kardus surat pendengar no. 2."
+        }
+      ],
+      "IV-06": [
+        {
+          "src": "/cases/case-02/P16.webp",
+          "caption": "Darno di depan Pasar Lama, 1983."
+        }
+      ],
+      "V-02": [
+        {
+          "src": "/cases/case-02/P17.webp",
+          "caption": "Pagi sesudah kebakaran, 21 Januari 1984."
+        }
+      ],
+      "V-03": [
+        {
+          "src": "/cases/case-02/P18.webp",
+          "caption": "Kali Lanang, 8 Maret 1984. Foto koran."
+        }
+      ],
+      "V-07": [
+        {
+          "src": "/cases/case-02/P19.webp",
+          "caption": "Purbo Wicitro di ladang tembakaunya, 1981."
+        },
+        {
+          "src": "/cases/case-02/P20.webp",
+          "caption": "Surat Jalan No. 211/IV/84.",
+          "tall": true
+        }
+      ],
+      "VII-01": [
+        {
+          "src": "/cases/case-02/P21.webp",
+          "caption": "Kaleng biskuit di gudang Ayah, Oktober 2025."
+        },
+        {
+          "src": "/cases/case-02/P22.webp",
+          "caption": "Ibu menjahit kebaya, Juni 2025."
+        }
+      ],
+      "IX-03": [
+        {
+          "src": "/cases/case-02/P23.webp",
+          "caption": "Stasiun Tawang, 20 Desember 2025."
+        }
+      ],
+      "IX-05": [
+        {
+          "src": "/cases/case-02/P24.webp",
+          "caption": "Juli 2026."
+        }
+      ]
+    },
+    "boardLinks": [
+      [
+        "II-04",
+        "II-05"
+      ],
+      [
+        "II-04",
+        "II-09"
+      ],
+      [
+        "II-05",
+        "II-03"
+      ],
+      [
+        "II-05",
+        "I-06"
+      ],
+      [
+        "II-04",
+        "III-04"
+      ],
+      [
+        "I-03",
+        "I-09"
+      ],
+      [
+        "I-03",
+        "I-10"
+      ],
+      [
+        "I-07",
+        "II-06"
+      ],
+      [
+        "I-08",
+        "V-09"
+      ],
+      [
+        "I-02",
+        "I-05"
+      ],
+      [
+        "I-05",
+        "II-10"
+      ],
+      [
+        "I-05",
+        "V-08"
+      ],
+      [
+        "V-07",
+        "III-01"
+      ],
+      [
+        "IV-07",
+        "III-05"
+      ],
+      [
+        "I-04",
+        "V-07"
+      ],
+      [
+        "II-08",
+        "III-05"
+      ],
+      [
+        "II-07",
+        "II-08"
+      ],
+      [
+        "II-07",
+        "II-10"
+      ],
+      [
+        "V-05",
+        "V-07"
+      ],
+      [
+        "V-07",
+        "VII-05"
+      ],
+      [
+        "0-01",
+        "VII-01"
+      ],
+      [
+        "0-01",
+        "I-02"
+      ],
+      [
+        "0-01",
+        "II-01"
+      ],
+      [
+        "IV-10",
+        "II-06"
+      ],
+      [
+        "IV-10",
+        "II-03"
+      ],
+      [
+        "V-04",
+        "II-06"
+      ]
+    ],
+    "questions": [
+      "q1",
+      "q2",
+      "q3",
+      "q4",
+      "q5",
+      "q6"
+    ],
+    "desk": [
+      "prep",
+      "tasks",
+      "tanya",
+      "papan",
+      "notes"
+    ],
+    "skinOptions": {
+      "IV-06": {
+        "to": "Bapak Hendro",
+        "address": "RSN Suwara, Wanasari"
+      },
+      "IV-07": {
+        "to": "Sdr. R. Sasongko Adi",
+        "address": "d/a RSN Suwara, Wanasari"
+      },
+      "IV-10": {
+        "to": "Sdr. Juru Tulis",
+        "address": "d/a RSN Suwara, Wanasari",
+        "postmark": "SEMARANG"
+      }
+    },
+    "letter": {
+      "to": "Bapak-bapak RSN Suwara",
+      "address": "Jl. Pemuda 17, Wanasari",
+      "postmark": "WANASARI"
+    },
+    "stampsWhy": "Di Wanasari, surat pendengar datang dengan perangko seratus rupiah, dan satu di antaranya, beramplop biru dengan cap pos Semarang, membawa orang yang tidak boleh dicari. Di sini perangko adalah bukti kertas: stamp berkas = kamu sudah membaca semuanya; stamp pertanyaan = kamu merakit jawaban dari dua dokumen atau lebih, bukan dari ingatan kota."
+  },
+  "answers": [],
+  "wrong": {},
+  "puzzles": [
+    {
+      "key": "q1",
+      "kind": "date",
+      "title": "1 · Kapan naskah ditulis?",
+      "prompt": "Tanggal sesi rekaman terakhir *Prahara Kali Lanang* episode 1–12.",
+      "config": {
+        "from": 1980,
+        "to": 1984
+      },
+      "solution": {
+        "date": "1982-07-24",
+        "hints": [
+          "Buku log rekaman studio.",
+          "II-04, baris paling bawah. Sesi yang selesai pukul dua pagi."
+        ]
+      },
+      "reward": {
+        "message": "Direkam 24 hari sebelum Ratri hilang. Naskahnya bukan nubuat. Naskahnya rencana.",
+        "stamp": {
+          "title": "Rekaman Juli",
+          "sub": "Kapan naskah ditulis?",
+          "motif": "tape",
+          "palette": "slate",
+          "year": "1982"
+        }
+      },
+      "sort": 1
+    },
+    {
+      "key": "q2",
+      "kind": "padlock",
+      "title": "2 · Apakah Ratri tenggelam?",
+      "prompt": "Kalau ia tidak di sungai, ia di kereta. Jam berapa kereta itu berangkat? (4 angka)",
+      "config": {
+        "length": 4,
+        "charset": "digits"
+      },
+      "solution": {
+        "code": "2140",
+        "hints": [
+          "Sungainya setinggi lutut (I-03). Jadi ke mana?",
+          "Satu-satunya kereta setelah 20.30 (I-07). Mobil radio berangkat 21.05 (II-06)."
+        ]
+      },
+      "reward": {
+        "message": "Senja Utara, 21.40, ke Semarang Tawang. Kalungnya sudah dijual sehari sebelumnya. Mobil radio pulang 22.10.",
+        "stamp": {
+          "title": "Senja Utara",
+          "sub": "Apakah Ratri tenggelam?",
+          "motif": "wave",
+          "palette": "sea",
+          "year": "1982"
+        }
+      },
+      "sort": 2
+    },
+    {
+      "key": "q3",
+      "kind": "text",
+      "title": "3 · Surat kesaksian itu asli?",
+      "prompt": "Dengan mesin tik apa surat kesaksian 12 September 1982 diketik? Pakai kaca pembesar.",
+      "config": {
+        "placeholder": "Mesin tik…"
+      },
+      "solution": {
+        "answers": [
+          "olympia",
+          "olympia sm9",
+          "olympia hijau",
+          "mesin tik olympia",
+          "mesin tik radio",
+          "mesin tik sasongko",
+          "mesin tik kantor",
+          "mesin tik rsn",
+          "mesin tik kantor radio"
+        ],
+        "replies": {
+          "brother": "Mesin Brother dipakai bagian administrasi. Huruf g-nya tidak naik.",
+          "polisi": "Bandingkan dengan laporan polisi di I-02. Huruf g-nya duduk rapi di garis."
+        },
+        "wrongMessage": "Perbesar \"tinggal\", \"pagar\", \"gelap\" di I-05. Lalu cari mesin yang huruf g-nya naik.",
+        "hints": [
+          "Buka I-05, tekan Kaca pembesar, geser ke kata \"tinggal\".",
+          "Inventaris kantor, II-10: mesin mana yang huruf \"g\"-nya agak naik?"
+        ]
+      },
+      "reward": {
+        "message": "Palsu. Diketik dengan Olympia SM9 milik radio, mesin yang sama dengan semua naskah. Dan \"airnya deras\", di sungai setinggi 35 sentimeter.",
+        "stamp": {
+          "title": "Huruf g",
+          "sub": "Surat kesaksian itu asli?",
+          "motif": "book",
+          "palette": "bone",
+          "year": "1982"
+        }
+      },
+      "sort": 3
+    },
+    {
+      "key": "q4",
+      "kind": "text",
+      "title": "4 · Siapa lelaki pincang bercaping?",
+      "prompt": "Bukan yang dituding kota. Yang dimaksud sandiwara.",
+      "config": {
+        "placeholder": "Nama…"
+      },
+      "solution": {
+        "answers": [
+          "purbo",
+          "purbo wicitro",
+          "pak purbo",
+          "juragan purbo",
+          "p wicitro",
+          "wicitro",
+          "juragan tembakau",
+          "juragan tembakau purbo"
+        ],
+        "replies": {
+          "darno": "Kota juga mengira begitu.",
+          "harjo": "Harjo tidak berjalan dengan tongkat.",
+          "wiratama": "Itu nama di sandiwara. Siapa di dunia nyata?",
+          "hendro": "Hendro yang menolong. Bukan yang ditunjuk."
+        },
+        "hints": [
+          "\"Orangnya tua dan jalannya pakai tongkat\" (I-04).",
+          "Juragan Wiratama di III-01; Gondo menulis di II-08 siapa yang semua orang tahu."
+        ]
+      },
+      "reward": {
+        "message": "Purbo Wicitro: asam urat, tongkat berkepala burung, caping di ladang tembakau. Sasongko menulis tongkatnya. Kota mendengar Darno.",
+        "stamp": {
+          "title": "Tongkat",
+          "sub": "Siapa lelaki pincang bercaping?",
+          "motif": "stone",
+          "palette": "olive",
+          "year": "1982"
+        }
+      },
+      "sort": 4
+    },
+    {
+      "key": "q5",
+      "kind": "text",
+      "title": "5 · Kenapa Episode 41 batal?",
+      "prompt": "Siapa yang datang ke studio pukul empat sore, Kamis 13 Oktober 1983? Tulis dua nama.",
+      "config": {
+        "placeholder": "Dua nama…"
+      },
+      "solution": {
+        "answers": [
+          "harjo dan purbo",
+          "purbo dan harjo",
+          "harjo purbo",
+          "purbo harjo",
+          "harjo wiguno dan purbo wicitro",
+          "purbo wicitro dan harjo wiguno",
+          "harjo wiguno purbo wicitro",
+          "pak harjo dan pak purbo",
+          "pak purbo dan pak harjo",
+          "kades harjo dan purbo"
+        ],
+        "replies": {
+          "purbo": "Ia tidak datang sendirian.",
+          "harjo": "Ia tidak datang sendirian.",
+          "sumiyati": "Ia juga minta batal (V-09), tapi tidak datang ke studio sore itu."
+        },
+        "hints": [
+          "Buku siaran, baris 13 Oktober 1983 (II-07).",
+          "Buku harian Gondo di tanggal yang sama (II-08)."
+        ]
+      },
+      "reward": {
+        "message": "\"Hentikan dongengmu, Ndro, atau aku yang menghentikan penulismu.\" Enam bulan kemudian, penulisnya berhenti.",
+        "stamp": {
+          "title": "Lagu Daerah",
+          "sub": "Kenapa Episode 41 batal?",
+          "motif": "envelope",
+          "palette": "rust",
+          "year": "1982"
+        }
+      },
+      "sort": 5
+    },
+    {
+      "key": "q6",
+      "kind": "text",
+      "title": "6 · Siapa yang menabrak Sasongko?",
+      "prompt": "Nomor polisi lengkap truk itu.",
+      "config": {
+        "placeholder": "AA …."
+      },
+      "solution": {
+        "answers": [
+          "aa 8812 kb"
+        ],
+        "replies": {
+          "aa88k": "Itu yang diingat saksi. Cari yang lengkap.",
+          "aa88": "Itu yang diingat saksi. Cari yang lengkap.",
+          "aa1417w": "Itu mobil radio.",
+          "aa2208w": "Itu motor Sasongko sendiri."
+        },
+        "hints": [
+          "Saksi hanya ingat sebagian: \"AA 88.. K.\" (V-05).",
+          "Surat jalan Gudang Tembakau Purbo, hari yang sama (V-07)."
+        ]
+      },
+      "reward": {
+        "message": "AA 8812 KB. Truk hijau Gudang Tembakau Purbo, sopir Karyo, berangkat 05.30 tanpa muatan dan tanpa kernet. Pak Karyo menunggu empat puluh tahun (VII-05).",
+        "stamp": {
+          "title": "Surat Jalan",
+          "sub": "Siapa yang menabrak Sasongko?",
+          "motif": "key",
+          "palette": "red",
+          "year": "1982"
+        }
+      },
+      "sort": 6
+    },
+    {
+      "key": "memori",
+      "kind": "memory",
+      "title": "Uji Ingatan",
+      "prompt": "Lima belas pernyataan tentang malam 17 Agustus 1982. Jawab dari ingatan.",
+      "config": {
+        "statements": [
+          "Ratri memakai kebaya putih ke pasar malam.",
+          "Ratri memakai sandal jepit merah.",
+          "Malam itu hujan turun sekitar pukul sebelas.",
+          "Selendang Ratri ditemukan dalam keadaan basah.",
+          "Warga di dekat jembatan mendengar jeritan perempuan.",
+          "Sebelah selop Ratri ditemukan di lumpur tepi sungai.",
+          "Menurut adiknya, Ratri berjalan ke arah sungai.",
+          "Malam 17 Agustus 1982 jatuh pada Selasa Kliwon.",
+          "Darno bunuh diri di Kali Lanang karena rasa bersalah.",
+          "Darno ditemukan di bawah jembatan tempat selendang Ratri ditemukan.",
+          "Truk yang menabrak Sasongko berwarna hijau.",
+          "Episode 41 sempat disiarkan sebagian sebelum dihentikan.",
+          "Ratri meninggalkan adiknya di dekat komidi putar.",
+          "Tercium bau kembang kantil di sekitar alun-alun malam itu.",
+          "Surat kesaksian yang membuat polisi menutup kasus diketik dengan mesin tik radio."
+        ]
+      },
+      "solution": {
+        "truth": [
+          "s",
+          "b",
+          "s",
+          "s",
+          "s",
+          "s",
+          "s",
+          "b",
+          "s",
+          "s",
+          "b",
+          "s",
+          "b",
+          "s",
+          "b"
+        ],
+        "sandiwara": [
+          1,
+          3,
+          5,
+          6,
+          14
+        ],
+        "utas": [
+          9,
+          10
+        ],
+        "messages": {
+          "sandiwara": "Anda menjawab **[X]** pernyataan dengan ingatan yang berasal dari sandiwara.\n\nAnda membaca kebenarannya di Berkas I. Anda membaca laporan polisi, data curah hujan, keterangan saksi. Lalu Anda membaca naskah sandiwara di Berkas III, satu kali, dan utas di Berkas VI, satu kali.\n\nWarga Wanasari mendengarnya empat puluh kali, selama sepuluh bulan, dalam keadaan berduka.\n\nSekarang Anda tahu bagaimana rasanya.",
+          "utas": "Ingatan itu tidak berasal dari sandiwara. Ingatan itu berasal dari utas, yang berasal dari mulut ke mulut, yang berasal dari kebutuhan sebuah kota akan akhir cerita.\n\nSigit Darnoto membacanya di rolling door bengkelnya, ditulis dengan pilox.",
+          "perfect": "Anda membaca dengan sangat teliti.\n\nPak Bambang Sutejo juga. Pak Darno juga. Mereka berdua juga tahu yang sebenarnya. Tidak ada yang mendengarkan mereka.\n\nTahu yang benar ternyata bukan bagian yang paling sulit.",
+          "clean": "Anda menjawab {C} dari {N} pernyataan sesuai arsip, dan tidak satu pun ingatan Anda berasal dari sandiwara atau utas.\n\nSisanya Anda jawab \"tidak tahu\", atau keliru tanpa sumber. Itu juga jawaban jujur. Kota ini jarang mengucapkannya."
+        },
+        "hints": []
+      },
+      "reward": {
+        "stamp": {
+          "title": "Cermin",
+          "sub": "Uji Ingatan",
+          "motif": "door",
+          "palette": "bone",
+          "year": "2026"
+        }
+      },
+      "sort": 7
+    },
+    {
+      "key": "ratri",
+      "kind": "text",
+      "title": "Siapa Ratri sekarang?",
+      "prompt": "",
+      "config": {
+        "placeholder": "Nama…"
+      },
+      "solution": {
+        "answers": [
+          "wulan sari",
+          "wulan",
+          "ibu laras",
+          "ibunya laras",
+          "ibu dari laras",
+          "mama laras",
+          "mamanya laras",
+          "wulan sari ibu laras",
+          "bu wulan",
+          "ibu wulan"
+        ],
+        "replies": {
+          "sudah meninggal": "Sungainya setinggi lutut.",
+          "meninggal": "Sungainya setinggi lutut.",
+          "tenggelam": "Sungainya setinggi lutut.",
+          "mati": "Sungainya setinggi lutut.",
+          "hanyut": "Sungainya setinggi lutut.",
+          "hartini": "Ia yang menyembunyikan, bukan yang disembunyikan.",
+          "endah": "Ia mengisi suara Lintang. Ia bukan Lintang.",
+          "darno": "Kota juga mengira begitu.",
+          "harjo": "Dia tidak membunuh siapa pun.",
+          "ratih": "Ratih adiknya. Ia berduka 43 tahun.",
+          "laras": "Laras yang menyusun arsip ini. Yang dicari ada di kalimat terakhirnya.",
+          "lintang": "Itu nama di sandiwara.",
+          "rara lintang": "Itu nama di sandiwara."
+        },
+        "wrongMessage": "Bacalah lagi Berkas 0. Kalimat terakhir.",
+        "hints": [
+          "Kidal. Bekas luka bakar di punggung tangan kiri. Empat nada naik, satu turun. Tidak mau lewat jembatan.",
+          "Siapa yang membuatkan teh jahe dengan tangan kirinya (0-01)? Siapa yang mengirim surat dari Semarang (IV-10)?"
+        ]
+      },
+      "reward": {
+        "message": "Berkas IX terbuka.",
+        "stamp": {
+          "title": "Wulan",
+          "sub": "Berkas IX",
+          "motif": "tape",
+          "palette": "green",
+          "year": "1983"
+        }
+      },
+      "sort": 8
+    }
+  ]
+}

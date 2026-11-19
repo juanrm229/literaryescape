@@ -127,3 +127,32 @@ export async function notifyWaitlist(slug: string, _: FormState, _fd: FormData):
     return { ok: failed === 0, msg: `${sent} email terkirim${failed ? `, ${failed} gagal (${lastErr})` : ''}.` };
   } catch (e) { return fail(e); }
 }
+
+/** Remove test readers / empty co-op tables chosen on /admin/cleanup. Accounts are never touched. */
+export async function purgeReaders(_: FormState, fd: FormData): Promise<FormState> {
+  try {
+    await requireAdmin();
+    const { inArray, isNull, and, like } = await import('drizzle-orm');
+    const ids = fd.getAll('reader').map(String).filter(Boolean).slice(0, 500);
+    const rooms = fd.getAll('room').map(String).filter(Boolean).slice(0, 200);
+    let readers = 0;
+    if (ids.length) {
+      // only anonymous readers: an id that belongs to an account is skipped
+      const safe = (await db.select({ id: schema.readers.id }).from(schema.readers).where(and(inArray(schema.readers.id, ids), isNull(schema.readers.userId)))).map((r) => r.id);
+      if (safe.length) {
+        await db.delete(schema.events).where(inArray(schema.events.readerId, safe));
+        await db.delete(schema.docNotes).where(inArray(schema.docNotes.readerId, safe));
+        await db.delete(schema.serials).where(inArray(schema.serials.readerId, safe));
+        await db.delete(schema.waitlist).where(inArray(schema.waitlist.readerId, safe));
+        await db.delete(schema.readers).where(inArray(schema.readers.id, safe)); // progress + seats cascade
+        readers = safe.length;
+      }
+    }
+    if (rooms.length) {
+      await db.delete(schema.readers).where(inArray(schema.readers.id, rooms.map((c) => `room:${c}`))); // room row + messages cascade via progress reader
+      await db.delete(schema.rooms).where(inArray(schema.rooms.code, rooms));
+    }
+    const wl = fd.get('waitlistTest') ? await db.delete(schema.waitlist).where(like(schema.waitlist.email, '%@example.com')).returning() : [];
+    return done(`${readers} pembaca, ${rooms.length} meja, ${wl.length} email uji dihapus.`, '/admin', '/admin/cleanup');
+  } catch (e) { return fail(e); }
+}

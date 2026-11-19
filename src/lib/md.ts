@@ -156,6 +156,8 @@ import { icon } from './svg';
       // paragraph
       const pzm = b.raw.trim().match(/^::puzzle\[([\w-]+)\]$/);
       if (pzm) { out += `<div class="pz-slot" data-pz="${esc(pzm[1])}"></div>`; continue; }
+      // the last line of an archive: the station jingle, then the screen goes dark
+      if (b.raw.trim() === '::fin') { out += `<div class="fin" data-fin="1" aria-hidden="true"></div>`; continue; }
       const text = unesc(b.raw);
       if (isNote(text)) { out += renderNote(text); continue; }
       if (o.tape) {

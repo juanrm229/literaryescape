@@ -69,7 +69,7 @@ export async function replaceAnswers(caseId: number, list: AnswerInput[], wrong:
 }
 
 export type PuzzleInput = { key: string; kind: string; title?: string; prompt?: string; config?: Record<string, unknown>; solution: Record<string, unknown>; reward?: Record<string, unknown> };
-const PUZZLE_KINDS = ['text', 'cipher', 'padlock', 'date', 'order', 'match', 'hotspot', 'frequency'];
+const PUZZLE_KINDS = ['text', 'cipher', 'padlock', 'date', 'order', 'match', 'hotspot', 'frequency', 'memory'];
 
 /** Replace every puzzle of a case. Solutions are stored server-side only. */
 export async function replacePuzzles(caseId: number, list: PuzzleInput[]) {

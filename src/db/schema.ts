@@ -165,6 +165,8 @@ export type ProgressData = {
   pzHints: Record<string, number>;
   tokensSpent: number;
   /** evidence board: pinned quotes + red strings ("idA|idB", sorted) */
+  /** memory tests: puzzle key → answers ('b' benar, 's' salah, 't' tidak tahu) */
+  memory?: Record<string, string[]>;
   pins?: Pin[];
   strings?: string[];
 };

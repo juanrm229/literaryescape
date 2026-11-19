@@ -1,3 +1,4 @@
+import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { casePage } from '@/lib/case-page';
 import { answerCount, loadDocMd, placedPeople, serverNow } from '@/lib/game';
@@ -15,6 +16,7 @@ export default async function Kabar({ params }: { params: Promise<{ slug: string
   const { slug } = await params;
   const { c, p, r } = await casePage(slug);
   const f = c.config.finale;
+  if (!f) redirect(`/c/${slug}`);
   const header = (
     <header className="hcard">
       <div className="hc-row"><Back href={`/c/${slug}`} /><ClueButton slug={slug} hints={c.config.hints} shown={p.data.hintsShown} /></div>

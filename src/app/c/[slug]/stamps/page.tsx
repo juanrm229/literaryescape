@@ -1,6 +1,6 @@
 import { casePage } from '@/lib/case-page';
 import { answerCount, placedPeople } from '@/lib/game';
-import { berkasStamp, kenalStamp, kabarStamp, blankStamp } from '@/lib/stamps';
+import { berkasStamp, kenalStamp, kabarStamp, blankStamp, stamp } from '@/lib/stamps';
 import { fmt } from '@/lib/jw';
 import { CaseHeader } from '@/components/CaseHeader';
 import { StampsView, type Collection } from '@/components/StampsView';
@@ -16,10 +16,10 @@ export default async function Stamps({ params }: { params: Promise<{ slug: strin
     {
       key: 'berkas', name: 'Berkas', desc: 'Dicap setiap kali satu berkas selesai dibaca.',
       items: c.berkas.map((b) => {
-        const got = r.berkasDone(b.code) && (b.code === cfg.finale.berkas || !!p.data.stamps[b.code]);
+        const got = r.berkasDone(b.code) && (b.code === cfg.finale?.berkas || !!p.data.stamps[b.code]);
         return { key: 'b:' + b.code, got, html: (got ? berkasStamp(cfg, b) : blankStamp(b.code)) as string, name: `Berkas ${b.code} · ${b.title}`,
-          desc: got ? (b.code === cfg.finale.berkas ? 'Dicap waktu kabar dikirim.' : `Dicap ${fmt(new Date(p.data.stamps[b.code]))}.`) : 'Belum dicap.',
-          share: !got ? undefined : b.code === cfg.finale.berkas ? (p.sentAt ? `/api/share/${slug}?k=sent` : undefined) : p.data.stamps[b.code] ? `/api/share/${slug}?k=b:${encodeURIComponent(b.code)}` : undefined };
+          desc: got ? (b.code === cfg.finale?.berkas ? 'Dicap waktu kabar dikirim.' : `Dicap ${fmt(new Date(p.data.stamps[b.code]))}.`) : 'Belum dicap.',
+          share: !got ? undefined : b.code === cfg.finale?.berkas ? (p.sentAt ? `/api/share/${slug}?k=sent` : undefined) : p.data.stamps[b.code] ? `/api/share/${slug}?k=b:${encodeURIComponent(b.code)}` : undefined };
       }),
     },
     {
@@ -31,11 +31,24 @@ export default async function Stamps({ params }: { params: Promise<{ slug: strin
       }),
     },
   ];
+  // locks that pay out a stamp form their own collection
+  const locks = c.puzzles.filter((z) => (z.reward as { stamp?: unknown }).stamp);
+  if (locks.length) {
+    colls.push({
+      key: 'gembok', name: 'Terjawab', desc: 'Setiap pertanyaan yang kamu jawab dari arsip.',
+      items: locks.map((z, i) => {
+        const rs = (z.reward as { stamp: { title: string; sub?: string; motif?: string; palette?: string; year?: string } }).stamp;
+        const got = !!p.data.solved?.[z.key];
+        return { key: 'p:' + z.key, got, html: (got ? stamp({ title: rs.title, sub: rs.sub || z.title, motif: rs.motif || 'key', palette: rs.palette || 'night', year: rs.year || '' }) : blankStamp(String(i + 1))) as string,
+          name: got ? rs.title : '—', desc: got ? z.title : 'Belum terjawab.', share: got ? `/api/share/${slug}?k=p:${encodeURIComponent(z.key)}` : undefined };
+      }),
+    });
+  }
   if (r.kabarUnlocked) {
     const people = await placedPeople(c.id, p.data.placed);
     const total = await answerCount(c.id);
     colls.push({
-      key: 'kabar', name: 'Kabar', desc: `Untuk amplop beralamat ${cfg.finale.address}. Kamu yang nulis namanya.`,
+      key: 'kabar', name: 'Kabar', desc: `Untuk amplop beralamat ${cfg.finale?.address ?? ''}. Kamu yang nulis namanya.`,
       items: Array.from({ length: total }, (_, i) => {
         const person = people[i];
         return person
@@ -52,7 +65,7 @@ export default async function Stamps({ params }: { params: Promise<{ slug: strin
     <div className="page">
       <ShellSync believe={p.data.believe} />
       <CaseHeader c={c} p={p} tab="stamps" />
-      <StampsView colls={colls} startColl={startColl} />
+      <StampsView colls={colls.filter((x) => x.items.length)} startColl={startColl} why={cfg.stampsWhy} />
     </div>
   );
 }
