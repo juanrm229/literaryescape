@@ -72,7 +72,7 @@ export function rankCardSvg(c: RankCard) {
   const fan = c.stamps.slice(-3);
   const n = fan.length;
   // outer stamps first, the newest one in the middle on top
-  const order = n === 3 ? [0, 2, 1] : n === 2 ? [0, 1] : [0];
+  const order = n === 3 ? [0, 2, 1] : n === 2 ? [0, 1] : n === 1 ? [0] : [];
   const fanSvg = order.map((i) => {
     const off = i - (n - 1) / 2;
     return `<g transform="rotate(${off * 10} 540 640)" filter="url(#sh)">${placeSvg(fan[i], 540 - 170 + off * 250, 370 + Math.abs(off) * 50, 340, 425)}</g>`;
