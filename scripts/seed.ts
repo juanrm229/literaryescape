@@ -2,6 +2,8 @@
  * Seed / re-seed a case from content/<slug>/ (markdown berkas files + case.json).
  * Usage: npm run db:seed            (seeds every folder in content/)
  *        npm run db:seed -- nyewu   (one case)
+ *        tsx scripts/seed.ts --if-empty   (only cases not yet in the DB — used on every deploy,
+ *                                          so edits made in /admin are never overwritten)
  * Progress of readers is kept; content, config and answers are replaced.
  */
 import 'dotenv/config';
@@ -35,8 +37,16 @@ async function seedPlaceholders() {
   }
 }
 
-const only = process.argv[2];
+const args = process.argv.slice(2);
+const ifEmpty = args.includes('--if-empty');
+const only = args.find((a) => !a.startsWith('--'));
 const slugs = only ? [only] : fs.readdirSync(ROOT).filter((d) => fs.existsSync(path.join(ROOT, d, 'case.json')));
-for (const s of slugs) await seedCase(s);
+for (const s of slugs) {
+  if (ifEmpty && (await db.select({ id: schema.cases.id }).from(schema.cases).where(eq(schema.cases.slug, s))).length) {
+    console.log(`· ${s}: already in the database, skipped`);
+    continue;
+  }
+  await seedCase(s);
+}
 if (!only) await seedPlaceholders();
 process.exit(0);

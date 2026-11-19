@@ -57,10 +57,18 @@ Without `RESEND_API_KEY`, the magic link is **printed to the server log** (and i
 
 ## Deploy (Vercel + Neon)
 
-1. Create a Postgres database on Neon (or Supabase) → copy the connection string (`?sslmode=require`).
-2. Import this repo into Vercel. Set the env vars: `DATABASE_URL`, `BETTER_AUTH_SECRET` (`openssl rand -base64 32`), `BETTER_AUTH_URL` (production URL), `ADMIN_EMAILS`, `RESEND_API_KEY` + `EMAIL_FROM` (verified domain), optionally `GOOGLE_CLIENT_ID/SECRET` (redirect URI: `https://<domain>/api/auth/callback/google`).
-3. From your machine, once: `DATABASE_URL=<neon> npm run db:push && DATABASE_URL=<neon> npm run db:seed`.
-4. Deploy. Sign in with an email from `ADMIN_EMAILS` → `/admin`.
+No terminal needed. Vercel runs `npm run vercel-build` = `drizzle-kit push` (create/update tables) → `seed --if-empty` (load cases not yet in the DB; CMS edits are never overwritten) → `next build`.
+
+1. **Neon**: create a project (region *Singapore*), copy the connection string from **Connect** (the one ending in `?sslmode=require`).
+2. **Vercel**: *Add New → Project* → import this repo → set *Production Branch* to the branch that holds this code.
+3. **Environment variables** (Vercel → Settings → Environment Variables):
+   - `DATABASE_URL`: from Neon
+   - `BETTER_AUTH_SECRET`: a random string ≥ 32 characters
+   - `BETTER_AUTH_URL`: your production URL, e.g. `https://postmortem.vercel.app`
+   - `ADMIN_EMAILS`: your email
+   - `RESEND_API_KEY` + `EMAIL_FROM`: so the login magic link gets emailed (without a verified domain, Resend can only send to your own email)
+   - optional `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`: redirect URI `https://<domain>/api/auth/callback/google`
+4. **Deploy.** Open the URL → sign in with your admin email → `/admin`.
 
 ## Adding a case
 
