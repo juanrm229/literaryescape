@@ -18,7 +18,9 @@ export const dynamic = 'force-dynamic';
 export default async function Archive({ params, searchParams }: { params: Promise<{ slug: string }>; searchParams: Promise<{ from?: string }> }) {
   const { slug } = await params;
   const { from } = await searchParams;
-  const { c, p, r, preview, room } = await casePage(slug);
+  const { c, p, r, preview, room, env } = await casePage(slug);
+  // collective gates: a shared meter, the whole readership pushing one door
+  const meter = (key: string) => { const g = c.config.gates?.[key]?.find((x) => x.type === 'collective'); return g && g.type === 'collective' ? <Collective sent={env.sent} threshold={g.threshold} /> : null; };
   const now = new Date();
   const days = daysUntil(r.windu, now);
   const nextK = nextMalamKliwon(now);
@@ -56,6 +58,7 @@ export default async function Archive({ params, searchParams }: { params: Promis
             return (
               <section className="sec locked" key={b.code}>{head}
                 {l.reasons.map((x, i) => <p className="lockrow" key={i}><Ic name="lock" />{x}</p>)}
+                {meter(b.code)}
                 {(gateViews[b.code] ?? []).map((v) => <PuzzleCard key={v.key} slug={c.slug} view={v} />)}
               </section>
             );
@@ -84,6 +87,7 @@ export default async function Archive({ params, searchParams }: { params: Promis
                           <span className="box"><Ic name="lock" /></span>
                           <Html as="span" className="row-t" html={`<b>${d.code}</b>${inline(d.title)}`} />
                           <span className="row-why">{dl.reasons[0]}</span>
+                        {meter(d.code)}
                         </Link>
                       </li>
                     );
@@ -111,5 +115,16 @@ export default async function Archive({ params, searchParams }: { params: Promis
           : r.kabarUnlocked ? <Link className="cta yellow" href={`/c/${c.slug}/kabar`}>Kirim kabar</Link> : <span className="cta dim">Archive complete</span>}
       </div>
     </div>
+  );
+}
+
+function Collective({ sent, threshold }: { sent: number; threshold: number }) {
+  const pct = Math.min(100, Math.round((sent / Math.max(1, threshold)) * 100));
+  const left = Math.max(0, threshold - sent);
+  return (
+    <span className="coll" role="meter" aria-valuemin={0} aria-valuemax={threshold} aria-valuenow={sent} aria-label="Kabar terkumpul">
+      <span className="coll-bar"><i style={{ width: `${pct}%` }} /></span>
+      <span className="coll-t">{left ? `${left.toLocaleString('id-ID')} kabar lagi dari pembaca mana pun` : 'Cukup. Pintunya terbuka.'}</span>
+    </span>
   );
 }

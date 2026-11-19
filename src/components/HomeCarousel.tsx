@@ -8,10 +8,12 @@ import { ShellSync, useUI } from './Shell';
 import { audio } from '@/lib/audio';
 import { esc } from '@/lib/esc';
 import { acceptCase } from '@/app/actions';
+import { joinWaitlist } from '@/app/extra-actions';
+import { haptic } from '@/lib/haptics';
 
 export type Slide =
   | { kind: 'live'; slug: string; no: string; title: string; hook: string; tagline: string; today: string; goal: string; audioHint: string; countdown: string; pill: string; wind: string; days: number; docs: number; berkas: number; pct: number; stamps: number; accepted: boolean; sent: boolean; voices: number }
-  | { kind: 'sealed'; slug: string; no: string; title: string; tagline: string; seal: string; lines: number[][] };
+  | { kind: 'sealed'; slug: string; no: string; title: string; tagline: string; seal: string; lines: number[][]; opensAt: string | null; teaser: string | null; waiting: number; onList: boolean; email: string | null };
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
@@ -53,6 +55,11 @@ export function HomeCarousel({ slides, start, signedIn, meInitial = "?" }: { sli
     });
   };
 
+  const waitFor = (s: Extract<Slide, { kind: 'sealed' }>) => {
+    haptic.tap();
+    sheet(<WaitSheet slug={s.slug} title={s.title} email={s.email} onDone={() => { closeSheet(); haptic.stamp(); toast('<small>Daftar tunggu</small><b>Tercatat.</b> Kami kabari lewat email.'); router.refresh(); }} />);
+  };
+
   const brief = () => {
     if (cur.kind !== 'live') { toast('<b>Still sealed.</b> Case berikutnya lagi disusun.'); return; }
     sheet(
@@ -73,7 +80,7 @@ export function HomeCarousel({ slides, start, signedIn, meInitial = "?" }: { sli
   };
 
   let h = 'Take the case?', p = 'This action cannot be undone. Serius.', ok = true;
-  if (cur.kind === 'sealed') { h = 'Still sealed.'; p = 'Amplopnya belum sampai. Coming soon.'; ok = false; }
+  if (cur.kind === 'sealed') { h = cur.onList ? 'Kami kabari.' : 'Still sealed.'; p = cur.onList ? 'Begitu amplopnya dicap, kamu yang pertama tahu.' : 'Tap ✓ untuk masuk daftar tunggu.'; ok = !cur.onList; }
   else if (cur.sent) { h = 'Case closed?'; p = 'Kabar sudah terkirim. Pintu belakang…'; }
   else if (cur.accepted) { h = 'Back to the case?'; p = `${cur.pct}% dibaca · ${cur.stamps} stamps. Progress-mu aman.`; }
 
@@ -92,7 +99,12 @@ export function HomeCarousel({ slides, start, signedIn, meInitial = "?" }: { sli
                   {s.lines.map((ws, j) => (
                     <div key={j}><span className="chip-g">??? ?? ???</span><div className="tl-it"><p>{ws.map((w, k) => <span key={k} className="redact" style={{ width: `${w}%` }} />)}</p></div></div>
                   ))}
-                  <div className="tl-it"><div className="pcard"><span className="pill" style={{ background: '#e9e8e3', color: '#888' }}>Coming soon</span><p>Arsipnya masih disusun. Amplopnya belum dicap.</p></div></div>
+                  <div className="tl-it"><div className="pcard">
+                    <span className="pill" style={{ background: '#e9e8e3', color: '#888' }}>{s.opensAt ? 'Dibuka dalam' : 'Coming soon'}</span>
+                    {s.opensAt ? <Countdown at={s.opensAt} /> : null}
+                    <p>{s.teaser ?? 'Arsipnya masih disusun. Amplopnya belum dicap.'}</p>
+                    <p className="wl-count">{s.onList ? 'Kamu ada di daftar tunggu.' : s.waiting ? `${s.waiting.toLocaleString('id-ID')} orang menunggu amplop ini.` : 'Jadi yang pertama menunggu.'}</p>
+                  </div></div>
                 </>
               )}
               <div className="fade" /><div className="grabber" />
@@ -106,7 +118,7 @@ export function HomeCarousel({ slides, start, signedIn, meInitial = "?" }: { sli
         <div className="dec">
           <button className="db" aria-label="Skip" onClick={() => go((idx + 1) % slides.length)}><Ic name="x" /></button><i /><i />
           <button className="db q" aria-label="Brief" onClick={brief}>?</button><i /><i />
-          <button className="db" aria-label="Take the case" aria-disabled={!ok} onClick={() => (ok && cur.kind === 'live' ? take(cur.slug, cur.accepted) : toast('<b>Belum bisa dibuka.</b> Amplopnya belum sampai.'))}><Ic name="check" /></button>
+          <button className="db" aria-label="Take the case" aria-disabled={!ok} onClick={() => (cur.kind === 'live' ? take(cur.slug, cur.accepted) : ok ? waitFor(cur) : toast('<b>Sudah di daftar tunggu.</b> Sabar, ya.'))}><Ic name="check" /></button>
         </div>
       </div>
     </div>
@@ -140,5 +152,33 @@ function LiveTimeline({ s }: { s: Extract<Slide, { kind: 'live' }> }) {
         <span className="voices"><i />{s.voices.toLocaleString('id-ID')} {s.voices === 1 ? 'reader has' : 'readers have'} sent the kabar</span>
       </div>
     </>
+  );
+}
+
+/** Live countdown to a sealed case's opening (WIB-agnostic: the instant comes from the server config). */
+function Countdown({ at }: { at: string }) {
+  const [now, setNow] = useState<number | null>(null);
+  useEffect(() => { setNow(Date.now()); const t = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(t); }, []);
+  const ms = Math.max(0, new Date(at).getTime() - (now ?? Date.now()));
+  const d = Math.floor(ms / 86400e3), h = Math.floor(ms / 3600e3) % 24, m = Math.floor(ms / 60e3) % 60, s = Math.floor(ms / 1e3) % 60;
+  return (
+    <div className="cd" suppressHydrationWarning>
+      {[[d, 'hari'], [h, 'jam'], [m, 'mnt'], [s, 'dtk']].map(([v, l]) => <span key={l as string}><b suppressHydrationWarning>{String(v).padStart(2, '0')}</b><small>{l}</small></span>)}
+    </div>
+  );
+}
+
+function WaitSheet({ slug, title, email, onDone }: { slug: string; title: string; email: string | null; onDone: () => void }) {
+  const [val, setVal] = useState(email ?? '');
+  const [err, setErr] = useState('');
+  const [pending, start] = useTransition();
+  return (
+    <form onSubmit={(e) => { e.preventDefault(); start(async () => { const r = await joinWaitlist(slug, val); if (r.ok) onDone(); else setErr(r.reason === 'email' ? 'Email-nya belum benar.' : 'Case ini tidak menerima daftar tunggu.'); }); }}>
+      <h2 className="sh-title">Kabari aku</h2>
+      <p className="sh-sub">{title} masih disegel. Tinggalkan email; satu surat saja, saat amplopnya dicap. Tidak ada newsletter.</p>
+      <input className="wl-input" type="email" inputMode="email" autoComplete="email" value={val} onChange={(e) => { setVal(e.target.value); setErr(''); }} placeholder="nama@email.com" required aria-label="Email" />
+      {err && <p className="wl-err">{err}</p>}
+      <button className="cta yellow" disabled={pending}>{pending ? 'Mencatat…' : 'Masukkan ke daftar tunggu'}</button>
+    </form>
   );
 }

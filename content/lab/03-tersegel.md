@@ -21,3 +21,9 @@ Di bawahnya tiga nama, dicoret, ditulis lagi, dicoret lagi. Nama-nama itu ada di
 &#91;Dokumen ini terbuka pada tanggal tertentu. Contoh gerbang "date".\]
 
 Kalau kamu membaca ini, berarti tanggalnya sudah lewat.
+
+## III-04 · Arsip Bersama
+
+&#91;Dokumen ini terbuka untuk semua orang sekaligus, setelah cukup banyak pembaca menutup perkara. Contoh gerbang "collective".\]
+
+Kalau halaman ini terbuka, berarti kamu tidak membaca sendirian. Orang-orang yang tidak kamu kenal sudah mengirim kabar yang sama, ke alamat yang sama, dan lautnya mendengar semuanya.

@@ -14,13 +14,15 @@ import { Back, ClueButton, Html, Ic, SoundButton } from '@/components/ui';
 import { ShellSync } from '@/components/Shell';
 import { holderOf } from '@/lib/coop';
 import { HeldDoc, ShareToTable } from '@/components/Room';
+import { MarginNotes } from '@/components/MarginNotes';
+import { noteCount } from '@/lib/notes';
 
 export const dynamic = 'force-dynamic';
 
 export default async function DocPage({ params }: { params: Promise<{ slug: string; code: string }> }) {
   const { slug, code: rawCode } = await params;
   const code = decodeURIComponent(rawCode);
-  const { c, p, r, room } = await casePage(slug);
+  const { c, p, r, room, viewer } = await casePage(slug);
   const doc = c.docs.find((d) => d.code === code);
   const finale = c.config.finale;
   if (!doc || doc.lock) redirect(`/c/${slug}`);
@@ -60,7 +62,7 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
   const idx = r.readable.findIndex((d) => d.code === code);
   const prev = r.readable[idx - 1], next = r.readable[idx + 1];
   const html = renderDocBody(c.config, { code, title: doc.title, md }, skin, !!p.data.opened[code]);
-  const puzzles = await puzzleViews(c, p, r, puzzleKeysIn(md));
+  const [puzzles, notes] = await Promise.all([puzzleViews(c, p, r, puzzleKeysIn(md)), noteCount(c.id, code)]);
   const plain = (s: string) => unesc(s).replace(/\*/g, '');
 
   return (
@@ -75,6 +77,7 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
       </header>
       <div className="doc-body grow">
         <DocReader key={code} slug={slug} code={code} skin={skin} html={html} fresh={fresh} puzzles={puzzles} />
+        <MarginNotes key={`mn-${code}`} slug={slug} code={code} count={notes} admin={viewer.admin} />
       </div>
       <div className="bar2">
         {prev && <Link className="sq dark" href={`/c/${slug}/d/${prev.code}`} aria-label="Previous"><Ic name="back" /></Link>}

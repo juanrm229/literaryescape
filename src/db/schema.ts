@@ -164,7 +164,11 @@ export type ProgressData = {
   lastWrong: Record<string, string>;
   pzHints: Record<string, number>;
   tokensSpent: number;
+  /** evidence board: pinned quotes + red strings ("idA|idB", sorted) */
+  pins?: Pin[];
+  strings?: string[];
 };
+export type Pin = { id: string; code: string; text: string; x: number; y: number };
 
 export const progress = pgTable('progress', {
   readerId: text('reader_id').notNull().references(() => readers.id, { onDelete: 'cascade' }),
@@ -208,3 +212,36 @@ export const roomMsgs = pgTable('room_msg', {
   text: text('text').notNull(),
   at: timestamp('at').notNull().defaultNow(),
 }, (t) => [index('room_msg_code_id').on(t.code, t.id)]);
+
+/** Margin notes readers leave on a document for later readers. Shown only to those who've read it, redacted server-side. */
+export const docNotes = pgTable('doc_note', {
+  id: serial('id').primaryKey(),
+  caseId: integer('case_id').notNull().references(() => cases.id, { onDelete: 'cascade' }),
+  code: text('code').notNull(),
+  readerId: text('reader_id').notNull(),
+  name: text('name').notNull(),
+  text: text('text').notNull(),
+  hidden: boolean('hidden').notNull().default(false),
+  at: timestamp('at').notNull().defaultNow(),
+}, (t) => [index('doc_note_case_code').on(t.caseId, t.code, t.at)]);
+
+/** "Kabari aku": readers waiting for a sealed case. */
+export const waitlist = pgTable('waitlist', {
+  id: serial('id').primaryKey(),
+  caseId: integer('case_id').notNull().references(() => cases.id, { onDelete: 'cascade' }),
+  email: text('email').notNull(),
+  readerId: text('reader_id'),
+  at: timestamp('at').notNull().defaultNow(),
+  notifiedAt: timestamp('notified_at'),
+}, (t) => [uniqueIndex('waitlist_case_email').on(t.caseId, t.email)]);
+
+/** Serial mode: one document a morning, by email. */
+export const serials = pgTable('serial', {
+  readerId: text('reader_id').notNull(),
+  caseId: integer('case_id').notNull().references(() => cases.id, { onDelete: 'cascade' }),
+  email: text('email').notNull(),
+  active: boolean('active').notNull().default(true),
+  lastSentAt: timestamp('last_sent_at'),
+  lastCode: text('last_code'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+}, (t) => [primaryKey({ columns: [t.readerId, t.caseId] })]);

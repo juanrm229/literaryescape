@@ -3,7 +3,8 @@
  * Usage: npm run db:seed            (seeds every folder in content/)
  *        npm run db:seed -- nyewu   (one case)
  *        tsx scripts/seed.ts --if-empty   (only cases not yet in the DB — used on every deploy,
- *                                          so edits made in /admin are never overwritten)
+ *                                          so edits made in /admin are never overwritten — unless
+ *                                          case.json bumps config.contentVersion)
  * Progress of readers is kept; content, config and answers are replaced.
  */
 import 'dotenv/config';
@@ -43,9 +44,13 @@ const ifEmpty = args.includes('--if-empty');
 const only = args.find((a) => !a.startsWith('--'));
 const slugs = only ? [only] : fs.readdirSync(ROOT).filter((d) => fs.existsSync(path.join(ROOT, d, 'case.json')));
 for (const s of slugs) {
-  if (ifEmpty && (await db.select({ id: schema.cases.id }).from(schema.cases).where(eq(schema.cases.slug, s))).length) {
-    console.log(`· ${s}: already in the database, skipped`);
-    continue;
+  if (ifEmpty) {
+    const [row] = await db.select({ config: schema.cases.config }).from(schema.cases).where(eq(schema.cases.slug, s));
+    // a bumped `config.contentVersion` in the repo means "ship this content on the next deploy"
+    const want = Number(JSON.parse(fs.readFileSync(path.join(ROOT, s, 'case.json'), 'utf8')).config?.contentVersion ?? 0);
+    const have = Number((row?.config as { contentVersion?: number } | undefined)?.contentVersion ?? 0);
+    if (row && want <= have) { console.log(`· ${s}: already in the database (v${have}), skipped`); continue; }
+    if (row) console.log(`↻ ${s}: content v${have} → v${want}`);
   }
   await seedCase(s);
 }

@@ -209,6 +209,8 @@ export function feedLine(c: CaseBundle, who: string, kind: string, data: Record<
     case 'puzzle_wrong': return `${who} salah di gembok “${pz?.title ?? data.key}”`;
     case 'puzzle_hint': return `${who} membuka clue gembok “${pz?.title ?? data.key}”`;
     case 'hint': return `${who} membuka clue ${String(data.n ?? '')}`;
+    case 'pin': return doc ? `${who} menyematkan kutipan dari ${doc.code} ke papan` : null;
+    case 'string': return `${who} menarik benang merah di papan`;
     case 'sent': return `${who} mengirim kabar. Perkara ditutup bersama.`;
     default: return null;
   }

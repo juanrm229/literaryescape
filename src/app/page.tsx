@@ -1,3 +1,5 @@
+import { eq } from 'drizzle-orm';
+import { db, schema } from '@/db';
 import { progressIdFor } from '@/lib/coop';
 import { getViewer, listCases, loadCase, loadProgress, rules, sentCount } from '@/lib/game';
 import { stamp } from '@/lib/stamps';
@@ -6,6 +8,11 @@ import type { CaseConfig } from '@/lib/case-config';
 import { HomeCarousel, type Slide } from '@/components/HomeCarousel';
 
 export const dynamic = 'force-dynamic';
+
+async function waitState(caseId: number, readerId: string | null, email: string | null) {
+  const rows = await db.select({ email: schema.waitlist.email, readerId: schema.waitlist.readerId }).from(schema.waitlist).where(eq(schema.waitlist.caseId, caseId));
+  return { waiting: rows.length, onList: rows.some((w) => (readerId && w.readerId === readerId) || (email && w.email === email.toLowerCase())), email };
+}
 
 export default async function Home({ searchParams }: { searchParams: Promise<{ case?: string }> }) {
   const sp = await searchParams;
@@ -35,6 +42,8 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ c
         kind: 'sealed', slug: r.slug, no: r.no, title: r.title, tagline: r.tagline,
         seal: stamp({ title: 'Sealed', sub: `Case ${r.no} · belum dikirim`, motif: 'envelope', palette: 'bone', year: '20—', postmark: ['SEALED', 'POSTMORTEM'] }) as string,
         lines: (cfg as { teaserLines?: number[][] }).teaserLines ?? [[38, 70, 52], [62, 44], [80, 30, 56]],
+        opensAt: (cfg as { opensAt?: string }).opensAt ?? null, teaser: (cfg as { teaser?: string }).teaser ?? null,
+        ...(await waitState(r.id, viewer.readerId, viewer.user?.email ?? null)),
       });
     }
   }

@@ -538,3 +538,62 @@ html[data-motion="reduce"] #footprints { display: none; }
 .row.held { opacity: .62; }
 .row-seat { display: inline-block; margin-right: 6px; padding: 1px 6px; border-radius: 6px; color: #111; font: 600 10px/1.5 var(--mono); font-style: normal; max-width: 90px; overflow: hidden; text-overflow: ellipsis; vertical-align: middle; }
 .rm-table { flex: none; }
+
+/* ---------- evidence board ---------- */
+.pin-chip { position: absolute; z-index: 75; display: inline-flex; align-items: center; gap: 8px; height: 38px; padding: 0 14px; border-radius: 19px; background: #111; color: #fff; font: 600 13px/1 var(--sans); box-shadow: 0 10px 26px rgba(0, 0, 0, .45); animation: chipIn .18s ease-out; }
+.pin-chip i { width: 10px; height: 10px; border-radius: 50%; background: #c4392f; box-shadow: inset -2px -2px 0 rgba(0, 0, 0, .25); }
+@keyframes chipIn { from { opacity: 0; transform: translateY(6px) scale(.96); } }
+.cork { position: relative; margin: 6px -6px 20px; border-radius: 18px; overflow: hidden; touch-action: pan-y;
+  background-color: #b8895a;
+  background-image: radial-gradient(rgba(0,0,0,.12) 1px, transparent 1.4px), radial-gradient(rgba(255,255,255,.10) 1px, transparent 1.4px), linear-gradient(160deg, #c49566, #a97a4c);
+  background-size: 7px 7px, 11px 11px, 100% 100%; background-position: 0 0, 3px 5px, 0 0;
+  box-shadow: inset 0 0 0 8px #6e4a2a, inset 0 0 30px rgba(0,0,0,.35); }
+.cork.empty { min-height: 320px; display: grid; place-items: center; padding: 24px; }
+.cork-hint { max-width: 280px; padding: 18px; background: #f7f2e6; color: #2b2a27; border-radius: 4px; transform: rotate(-1.5deg); box-shadow: 0 10px 20px rgba(0,0,0,.25); font: 400 14px/1.5 var(--serif); }
+.cork-hint b { font-family: var(--sans); }
+.cork-strings { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.cork-strings .string { fill: none; stroke: #b3211b; stroke-width: 2.4; stroke-linecap: round; filter: drop-shadow(0 2px 1.5px rgba(0,0,0,.35)); }
+.cork-strings .knot { fill: #b3211b; stroke: #7a1410; stroke-width: 1.5; pointer-events: auto; cursor: pointer; }
+.note { position: absolute; z-index: 3; padding: 16px 12px 8px; background: #fbf7ec; color: #2b2a27; border-radius: 2px; box-shadow: 0 8px 16px rgba(0,0,0,.28), 0 1px 0 rgba(0,0,0,.05); touch-action: none; user-select: none; cursor: grab; transition: box-shadow .15s; }
+.note:active { cursor: grabbing; }
+.note.sel { box-shadow: 0 0 0 3px #f4d23c, 0 14px 26px rgba(0,0,0,.35); z-index: 4; }
+.note q { display: -webkit-box; -webkit-line-clamp: 6; -webkit-box-orient: vertical; overflow: hidden; font: 400 13px/1.4 var(--serif); quotes: '“' '”'; }
+.tack { position: absolute; top: 5px; left: 50%; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; box-shadow: inset -2px -2px 0 rgba(0,0,0,.3), 0 2px 3px rgba(0,0,0,.4); }
+.note-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; font: 600 10.5px/1 var(--mono); }
+.note-foot a { color: #2c4b55; text-decoration: underline; }
+.note-foot button { width: 24px; height: 24px; color: #8a8478; font-size: 16px; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+/* ---------- margin notes ---------- */
+.mn-fold { display: flex; align-items: center; gap: 12px; width: 100%; margin: 16px 0 4px; padding: 14px 16px; border-radius: 16px; background: #141414; border: 1px dashed #2e2e2e; color: #e8e6df; text-align: left; }
+.mn-fold b { display: block; font: 600 14px/1.2 var(--sans); }
+.mn-fold small { display: block; margin-top: 3px; font: 400 11px/1.3 var(--mono); color: #8d8d89; }
+.mn-ink { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: #f7f2e6; color: #2c4b55; font-size: 17px; flex: none; }
+.mn-open { margin-left: auto; font: 600 12px/1 var(--mono); color: var(--yellow); }
+.mn { margin: 16px 0 4px; padding: 16px; border-radius: 18px; background: #f7f2e6; color: #2b2a27; }
+.mn header { display: flex; justify-content: space-between; align-items: center; font: 600 15px/1 var(--sans); }
+.mn header button { font: 500 12px/1 var(--mono); color: #8a8478; }
+.mn-rule { margin: 8px 0 10px; font: 400 11.5px/1.5 var(--mono); color: #6f6a60; }
+.mn-x { letter-spacing: -1px; color: #2b2a27; }
+.mn .field input { background: #fff; color: #111; border-color: #e1dccf; }
+.mn-list { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 10px; }
+.mn-list li { padding: 10px 12px 8px; border-left: 2px solid #c9bfa8; background: rgba(255, 255, 255, .5); border-radius: 0 10px 10px 0; }
+.mn-list li.mine { border-left-color: #2c4b55; }
+.mn-list p { margin: 0 0 4px; font: 400 15px/1.45 var(--hand, var(--serif)); font-family: 'Kalam', var(--serif); color: #23324f; }
+.mn-list small { font: 400 10.5px/1.4 var(--mono); color: #8a8478; }
+.mn-list small button { margin-left: 8px; color: #b5342b; font: inherit; }
+.mn-none { color: #8a8478; font: 400 12px/1.5 var(--mono); border-left-color: transparent !important; background: none !important; }
+
+/* ---------- collective meter / waitlist / countdown ---------- */
+.coll { display: block; grid-column: 2 / -1; margin: 8px 0 2px; }
+.sec .coll { margin: 4px 0 14px 6px; }
+.coll-bar { display: block; height: 6px; border-radius: 3px; background: #222; overflow: hidden; }
+.coll-bar i { display: block; height: 100%; border-radius: 3px; background: linear-gradient(90deg, #2c4b55, #7cc4d6); }
+.coll-t { display: block; margin-top: 6px; font: 400 11px/1.3 var(--mono); color: #7cc4d6; }
+.cd { display: flex; gap: 8px; margin: 10px 0 6px; }
+.cd span { display: grid; place-items: center; min-width: 52px; padding: 8px 6px; border-radius: 10px; background: #111; color: #fff; }
+.cd b { font: 700 20px/1 var(--mono); }
+.cd small { margin-top: 4px; font: 400 9.5px/1 var(--mono); color: #8d8d89; text-transform: uppercase; letter-spacing: .1em; }
+.wl-count { margin-top: 6px !important; font: 500 11.5px/1.4 var(--mono) !important; color: #6f6f6b !important; }
+.wl-input { width: 100%; height: 50px; margin: 6px 0 10px; padding: 0 16px; border-radius: 14px; border: 1px solid #ddd; background: #fff; color: #111; font: 500 16px/1 var(--sans); }
+.wl-err { margin: -4px 0 10px; color: #b5342b; font: 500 13px/1.3 var(--sans); }

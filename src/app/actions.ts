@@ -6,6 +6,7 @@ import type { ProgressData } from '@/db/schema';
 import { gateEnv, getViewer, loadCase, loadProgress, saveProgress, rules, loadDocMd, sentCount, logEvent, loadPuzzleSolution } from '@/lib/game';
 import { berkasStamp, kenalStamp, stamp } from '@/lib/stamps';
 import { roomFor, mergeSave, feedLine, say, canRead, leaveRoom } from '@/lib/coop';
+import { notesFor, redact } from '@/lib/notes';
 import { nameCandidates, tembangStanzas } from '@/lib/text';
 
 /**
@@ -255,4 +256,88 @@ export async function tunePuzzle(slug: string, key: string, freq: number): Promi
   const t = pz.solution as { freq: number; tol?: number };
   const d = Math.abs(Number(freq) - t.freq);
   return { signal: Math.max(0, Math.min(1, 1 - d / 2.5)) };
+}
+
+/* ------------------------------------------------------------------ */
+/* Evidence board                                                       */
+/* ------------------------------------------------------------------ */
+const clamp01 = (n: unknown) => Math.max(0, Math.min(100, Number(n) || 0));
+const MAX_PINS = 60;
+
+/** Pin a quote from a document the reader can actually read. */
+export async function pinQuote(slug: string, code: string, text: string) {
+  const { c, p, r, room, save, ev } = await ctx(slug);
+  const doc = c.docs.find((d) => d.code === code);
+  const quote = String(text ?? '').replace(/\s+/g, ' ').trim().slice(0, 280);
+  if (!doc || !r.docOpen(code) || !canRead(room, c, code) || quote.length < 3) return { ok: false as const };
+  const pins = p.data.pins ?? [];
+  if (pins.length >= MAX_PINS) return { ok: false as const, full: true };
+  const n = pins.length;
+  // scatter new notes across the cork in a loose grid so they don't stack
+  const pin = { id: crypto.randomUUID().slice(0, 8), code, text: quote, x: 4 + (n % 2) * 44 + ((n * 7) % 8), y: 3 + Math.floor(n / 2) * 9 + ((n * 5) % 4) };
+  await save({ data: { ...p.data, pins: [...pins, pin] } });
+  await ev('pin', { code });
+  return { ok: true as const, pin };
+}
+
+export async function movePin(slug: string, id: string, x: number, y: number) {
+  const { p, save } = await ctx(slug);
+  const pins = p.data.pins ?? [];
+  if (!pins.some((q) => q.id === id)) return;
+  await save({ data: { ...p.data, pins: pins.map((q) => (q.id === id ? { ...q, x: clamp01(x), y: clamp01(y) } : q)) } });
+}
+
+export async function unpin(slug: string, id: string) {
+  const { p, save } = await ctx(slug);
+  await save({ data: { ...p.data, pins: (p.data.pins ?? []).filter((q) => q.id !== id), strings: (p.data.strings ?? []).filter((s) => !s.split('|').includes(id)) } });
+}
+
+/** Tie (or untie) a red string between two pins. */
+export async function toggleString(slug: string, a: string, b: string) {
+  const { p, save, ev } = await ctx(slug);
+  const ids = new Set((p.data.pins ?? []).map((q) => q.id));
+  if (a === b || !ids.has(a) || !ids.has(b)) return { ok: false };
+  const key = [a, b].sort().join('|');
+  const cur = p.data.strings ?? [];
+  const on = !cur.includes(key);
+  await save({ data: { ...p.data, strings: on ? [...cur, key] : cur.filter((s) => s !== key) } });
+  if (on) await ev('string', {});
+  return { ok: true, on };
+}
+
+/* ------------------------------------------------------------------ */
+/* Margin notes (public, spoiler-scrubbed)                              */
+/* ------------------------------------------------------------------ */
+export type NoteView = { id: number; name: string; text: string; at: string; mine: boolean };
+
+/** Only readers who have finished the document may see what others wrote in its margin. */
+export async function docNotesAction(slug: string, code: string): Promise<{ ok: boolean; notes: NoteView[] }> {
+  const { rid, c, p } = await ctx(slug);
+  if (!p.data.read[code]) return { ok: false, notes: [] };
+  const rows = await notesFor(c.id, code);
+  return { ok: true, notes: await Promise.all(rows.map(async (n) => ({ id: n.id, name: n.name, text: await redact(c.id, n.text), at: n.at.toISOString(), mine: n.readerId === rid }))) };
+}
+
+export async function addNote(slug: string, code: string, raw: string): Promise<{ ok: boolean; reason?: string; note?: NoteView }> {
+  const { rid, c, p, room } = await ctx(slug);
+  if (!p.data.read[code] || !c.docs.some((d) => d.code === code)) return { ok: false, reason: 'unread' };
+  const text = String(raw ?? '').replace(/\s+/g, ' ').trim().slice(0, 280);
+  if (text.length < 2) return { ok: false, reason: 'empty' };
+  const mine = (await notesFor(c.id, code, 200)).filter((n) => n.readerId === rid);
+  if (mine.length >= 3) return { ok: false, reason: 'limit' };
+  const v = await getViewer();
+  const name = room?.me.name ?? (v.user?.name && v.user.name !== v.user.email ? v.user.name : v.user?.email?.split('@')[0]) ?? `Pembaca ${rid.slice(0, 3).toUpperCase()}`;
+  const [row] = await db.insert(schema.docNotes).values({ caseId: c.id, code, readerId: rid, name: name.slice(0, 24), text }).returning();
+  await logEvent(c.id, rid, 'note', { code });
+  return { ok: true, note: { id: row.id, name: row.name, text: await redact(c.id, row.text), at: row.at.toISOString(), mine: true } };
+}
+
+export async function deleteNote(slug: string, id: number) {
+  const { rid, c } = await ctx(slug);
+  const v = await getViewer();
+  // writers delete their own; admins can hide anyone's
+  await db.update(schema.docNotes).set({ hidden: true }).where(v.admin
+    ? and(eq(schema.docNotes.id, id), eq(schema.docNotes.caseId, c.id))
+    : and(eq(schema.docNotes.id, id), eq(schema.docNotes.caseId, c.id), eq(schema.docNotes.readerId, rid)));
+  return { ok: true };
 }

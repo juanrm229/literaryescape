@@ -12,6 +12,9 @@ import { authClient } from '@/lib/auth-client';
 import { ReadingSettings } from './ReadingSettings';
 import { InstallRow } from './Pwa';
 import { CoopPanel } from './Room';
+import { EvidenceBoard } from './EvidenceBoard';
+import { SerialRow } from './SerialRow';
+import type { Pin } from '@/db/schema';
 
 type Props = {
   slug: string; sub: string;
@@ -19,6 +22,8 @@ type Props = {
   bekal: Record<string, boolean>; board: Record<string, string>; extra: string[]; notes: string; believe: boolean;
   roster: string[][] | null; user: { email: string; name: string } | null; admin: boolean;
   room: { code: string; members: number } | null; defaultName: string;
+  pins: Pin[]; strings: string[]; titles: Record<string, string>;
+  serial: { active: boolean; email: string | null };
 };
 
 const iso = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -44,7 +49,7 @@ export function DeskView(props: Props) {
     return () => clearTimeout(t);
   }, [notes, slug, props.notes]);
 
-  const segs: [string, string][] = [['prep', 'Prep'], ['tasks', 'Tasks'], ['board', 'Board 41'], ['pasaran', 'Pasaran'], ['notes', 'Notes']];
+  const segs: [string, string][] = [['prep', 'Prep'], ['tasks', 'Tasks'], ['papan', 'Papan'], ['board', 'Board 41'], ['pasaran', 'Pasaran'], ['notes', 'Notes']];
   const believe = (on: boolean) => start(async () => {
     await updateDesk(slug, { believe: on });
     toast(on ? '<b>Sekarang kamu bisa melihat mereka.</b><br>Mereka juga bisa melihatmu.' : '<b>Ini cuma cerita.</b> Good.', { ms: on ? 5200 : 2400 });
@@ -72,6 +77,7 @@ export function DeskView(props: Props) {
         </div>
         {props.admin && <div className="acct"><span>Admin<small>Kelola case, berkas, dan jawaban.</small></span><Link href="/admin">Open CMS</Link></div>}
         <h3 className="sub-h">Reading</h3>
+        <SerialRow slug={slug} active={props.serial.active} email={props.serial.email} />
         <ReadingSettings />
         <InstallRow />
         <h3 className="sub-h">Settings</h3>
@@ -97,6 +103,8 @@ export function DeskView(props: Props) {
         </ul>
       </>
     );
+  } else if (sub === 'papan') {
+    body = <EvidenceBoard slug={slug} pins={props.pins} strings={props.strings} titles={props.titles} />;
   } else if (sub === 'board') {
     if (!props.roster) {
       body = <div className="lockcard" style={{ marginTop: 18 }}><Ic name="lock" /><h2>Board masih kosong</h2><p>Nama-namanya ada di laporan syahbandar. Baca I-02 dulu.</p><Link className="cta" href={`/c/${slug}/d/I-02`}>Open I-02</Link></div>;

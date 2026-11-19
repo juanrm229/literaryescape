@@ -103,3 +103,27 @@ export async function savePuzzles(slug: string, _: FormState, fd: FormData): Pro
     return done(`${r.puzzles} puzzle tersimpan.`, `/admin/${slug}`, `/c/${slug}`);
   } catch (e) { return fail(e); }
 }
+
+/** One letter to everyone on the waitlist, once the case is live. Each address is mailed at most once. */
+export async function notifyWaitlist(slug: string, _: FormState, _fd: FormData): Promise<FormState> {
+  try {
+    await requireAdmin();
+    const { and, isNull } = await import('drizzle-orm');
+    const { sendMail, letter, appUrl } = await import('@/lib/mail');
+    const [c] = await db.select().from(schema.cases).where(eq(schema.cases.slug, slug));
+    if (!c) throw new Error('Case not found');
+    if (c.status !== 'live') throw new Error('Set status ke live dulu, baru kabari daftar tunggu.');
+    const rows = await db.select().from(schema.waitlist).where(and(eq(schema.waitlist.caseId, c.id), isNull(schema.waitlist.notifiedAt))).limit(500);
+    let sent = 0, failed = 0, lastErr = '';
+    for (const w of rows) {
+      const r = await sendMail(w.email, `Case ${c.no} · ${c.title} sudah dibuka`, letter({
+        kicker: `Case ${c.no}`, title: `${c.title} sudah dibuka.`,
+        body: `<p>${c.tagline}</p><p>Kamu minta dikabari. Ini kabarnya. Amplopnya sudah dicap.</p>`,
+        cta: { href: `${appUrl()}/?case=${c.slug}`, label: 'Ambil perkaranya' },
+        foot: 'Kamu menerima satu surat ini karena masuk daftar tunggu postmortem. Tidak akan ada surat lain.',
+      }));
+      if (r.ok) { sent++; await db.update(schema.waitlist).set({ notifiedAt: new Date() }).where(eq(schema.waitlist.id, w.id)); } else { failed++; lastErr = r.error ?? ''; }
+    }
+    return { ok: failed === 0, msg: `${sent} email terkirim${failed ? `, ${failed} gagal (${lastErr})` : ''}.` };
+  } catch (e) { return fail(e); }
+}

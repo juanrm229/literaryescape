@@ -11,7 +11,7 @@ import { parseYMD, pasaran, fmt as fmtDate, BULAN } from '@/lib/jw';
 export const emptyProgress = (): ProgressData => ({
   read: {}, opened: {}, stamps: {}, kenal: {}, board: {}, extra: [], notes: '', bekal: {},
   placed: [], recited: [], tembangLine: 0, believe: false, hintsShown: 1,
-  solved: {}, attempts: {}, lastWrong: {}, pzHints: {}, tokensSpent: 0,
+  solved: {}, attempts: {}, lastWrong: {}, pzHints: {}, tokensSpent: 0, pins: [], strings: [],
 });
 
 /** "Now" on the server. PM_TODAY lets you rehearse the windu date outside production. */
@@ -113,7 +113,7 @@ export type PuzzleMeta = { key: string; kind: string; title: string; prompt: str
 const g = globalThis as unknown as { pmMemo?: Map<string, { at: number; v: Promise<unknown> }> };
 const memoStore = (g.pmMemo ??= new Map());
 const TTL = 60_000;
-function memo<T>(key: string, fn: () => Promise<T>): Promise<T> {
+export function memo<T>(key: string, fn: () => Promise<T>): Promise<T> {
   const hit = memoStore.get(key);
   if (hit && Date.now() - hit.at < TTL) return hit.v as Promise<T>;
   const v = fn().catch((e) => { memoStore.delete(key); throw e; });

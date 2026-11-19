@@ -5,7 +5,7 @@ import { db, schema } from '@/db';
 import { Back } from '@/components/ui';
 import { AdminForm } from '@/components/AdminForms';
 import { AdminGate } from '@/components/AdminGate';
-import { updateMeta, uploadBerkas, saveConfig, saveAnswers, savePuzzles, deleteCase } from '../actions';
+import { updateMeta, uploadBerkas, saveConfig, saveAnswers, savePuzzles, deleteCase, notifyWaitlist } from '../actions';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,6 +22,8 @@ export default async function AdminCase({ params }: { params: Promise<{ slug: st
   wrongRows.forEach((w) => (wrong[w.code] ||= []).push(w.alias));
   const puzzleRows = await db.select().from(schema.puzzles).where(eq(schema.puzzles.caseId, c.id)).orderBy(asc(schema.puzzles.sort));
   const puzzlesJson = JSON.stringify(puzzleRows.map(({ key, kind, title, prompt, config, solution, reward }) => ({ key, kind, title, prompt, config, solution, reward })), null, 2);
+  const wl = await db.select({ notifiedAt: schema.waitlist.notifiedAt }).from(schema.waitlist).where(eq(schema.waitlist.caseId, c.id));
+  const wlPending = wl.filter((w) => !w.notifiedAt).length;
   const answersJson = JSON.stringify({ answers: answers.map(({ name, aliases, habit, question, year }) => ({ name, aliases, habit, question, year })), wrong }, null, 2);
 
   return (
@@ -30,6 +32,10 @@ export default async function AdminCase({ params }: { params: Promise<{ slug: st
         <header className="hcard"><div className="hc-row"><Back href="/admin" /><span className="hc-right"><Link className="pillbtn" href={`/admin/${slug}/analytics`}>Analytics</Link><Link className="pillbtn" href={`/c/${slug}`}>{c.status === "live" ? "Open" : "Preview"}</Link></span></div>
           <span className="chip-g">{c.status} · /{slug}</span><h1>{c.title}</h1><p className="hc-sub">{berkas.length} berkas · {docs.length} dokumen · {answers.length} jawaban</p></header>
         <div className="body grow">
+          <h3 className="sub-h">Daftar tunggu</h3>
+          <p className="desk-note">{wl.length} orang mendaftar · {wlPending} belum dikabari. Untuk case sealed, isi <code>opensAt</code> (ISO, mis. 2027-01-17T19:00:00+07:00) dan <code>teaser</code> di Config agar kartu di beranda menampilkan hitung mundur.</p>
+          {wlPending > 0 && <AdminForm action={notifyWaitlist.bind(null, slug)} submit={`Kabari ${wlPending} orang`}><p className="desk-note">Satu email per alamat, hanya saat status live.</p></AdminForm>}
+
           <h3 className="sub-h">Metadata</h3>
           <AdminForm action={updateMeta.bind(null, slug)} submit="Save metadata">
             <label className="adm-l">Status<select name="status" defaultValue={c.status}><option value="draft">draft — hidden</option><option value="sealed">sealed — teaser on home</option><option value="live">live — playable</option></select></label>

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { PuzzleCard } from './Puzzle';
+import { PinSelection } from './PinSelection';
 import type { PuzzleView } from '@/lib/puzzles';
 import { useUI } from './Shell';
 import { useTape } from './useTape';
@@ -85,6 +86,7 @@ export function DocReader({ slug, code, skin, html, fresh, onTapeEnd, puzzles = 
     <>
       <article ref={ref} className={`doc skin-${skin}`} data-doc={code} onClick={onClick} onKeyDown={onKey} dangerouslySetInnerHTML={{ __html: html }} />
       {slots.map((s) => createPortal(<PuzzleCard slug={slug} view={s.view} />, s.el, s.view.key))}
+      <PinSelection slug={slug} code={code} article={ref} />
     </>
   );
 }

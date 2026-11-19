@@ -98,3 +98,26 @@ By default a berkas opens once the last document of the previous berkas has been
 ## 6. Publishing
 
 `npm run db:seed -- <slug>` (local), or `/admin` → New case → upload `.md` → paste config/answers/puzzles → status `live`. A `draft` case can be previewed by admins at `/c/<slug>`.
+
+Shipping content edits from the repo: deploys only seed cases that aren't in the database yet (so `/admin` edits are never overwritten). To push a new version of a case from `content/<slug>/`, bump `config.contentVersion` in its `case.json`.
+
+## 7. Before launch: the sealed card
+
+Set status `sealed` and add to config:
+
+```json
+{ "opensAt": "2027-01-17T19:00:00+07:00", "teaser": "Satu kalimat yang bikin orang menunggu." }
+```
+
+The home card shows a live countdown and a **Kabari aku** waitlist. When you flip the case to `live`, `/admin/<slug>` shows **Kabari N orang**: one email per address, once.
+
+## 8. Things every case gets for free
+
+You don't configure these; they work on any case.
+
+- **Co-op tables** (Desk ▸ Prep ▸ Main bareng): up to 4 readers share one progress. In *Terbagi* mode each berkas' documents are dealt between seats (Berkas 0 and the finale stay shared), so readers have to tell each other what they hold. Write documents that make sense on their own and pay off when combined.
+- **Evidence board** (Desk ▸ Papan): readers select any sentence, pin it, and tie red strings between quotes. A good case has sentences that want to be pinned together.
+- **Margin notes**: public notes under each document, visible only after reading it. Every answer name/alias and every lock solution is scrubbed to ▮▮▮ on the server, so keep `aliases` complete.
+- **Collective gate**: `{ "type": "collective", "threshold": 500 }` on a berkas or document opens it for *everyone* once that many readers have sent the kabar. The archive shows a shared meter.
+- **Morning letters** (Desk ▸ Prep ▸ Surat pagi): one document's opening lines by email at 06.00 WIB until the reader is done. Strong first lines matter.
+- **Share cards**: earned stamps, rank, and a spoiler-free "kabar sudah sampai" card, rendered as 1080×1920 images.
