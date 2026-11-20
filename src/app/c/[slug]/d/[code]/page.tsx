@@ -76,7 +76,8 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
         <div className={`read-pm${fresh ? ' fresh' : ''}`}><b>TERBACA</b><span>{labelJw(at)}</span><i>{postmark(at)}</i></div>
       </header>
       <div className="doc-body grow">
-        <DocReader key={code} slug={slug} code={code} skin={skin} html={html} fresh={fresh} puzzles={puzzles} />
+        <DocReader key={code} slug={slug} code={code} skin={skin} html={html} fresh={fresh} puzzles={puzzles}
+          loupe={c.config.loupe?.[code]?.length ? { marks: c.config.loupe[code].map((m) => ({ id: m.id, note: m.note })), found: c.config.loupe[code].filter((m) => p.data.found?.[`${code}:${m.id}`]).map((m) => m.id) } : undefined} />
         <MarginNotes key={`mn-${code}`} slug={slug} code={code} count={notes} admin={viewer.admin} />
       </div>
       <div className="bar2">

@@ -35,6 +35,21 @@ function olympia(html: string) {
   return html.split(/(<[^>]+>|&[#a-z0-9]+;)/i).map((seg, i) => (i % 2 ? seg : seg.replace(/[ge]/g, (ch) => `<span class="t${ch}">${ch}</span>`))).join('');
 }
 
+/** Wrap the first text occurrence of each mark's word (never inside a tag); append micro-writing marks. */
+function loupeMarks(html: string, marks: { id: string; find?: string; micro?: string; note: string }[]) {
+  for (const m of marks) {
+    if (m.micro) { html += `<p class="micro"><span class="lm" data-lm="${esc(m.id)}">${esc(m.micro)}</span></p>`; continue; }
+    if (!m.find) continue;
+    const parts = html.split(/(<[^>]+>)/);
+    const re = new RegExp(`(^|[^\\p{L}])(${m.find.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})(?=$|[^\\p{L}])`, 'u');
+    for (let i = 0; i < parts.length; i += 2) {
+      if (re.test(parts[i])) { parts[i] = parts[i].replace(re, (_, pre, w) => `${pre}<span class="lm" data-lm="${esc(m.id)}">${w}</span>`); break; }
+    }
+    html = parts.join('');
+  }
+  return html;
+}
+
 function photosHTML(list: { src: string; caption: string; tall?: boolean }[]) {
   return list.map((ph, i) => `<figure class="arch-photo${i % 2 ? ' r' : ''}${ph.tall ? ' tall' : ''}" data-act="photo-open" data-src="${esc(ph.src)}" data-cap="${esc(ph.caption)}" role="button" tabindex="0" aria-label="Perbesar foto: ${esc(ph.caption)}">
     <img src="${esc(ph.src)}" alt="${esc(ph.caption)}" loading="lazy" decoding="async"><figcaption>${inline(ph.caption)}</figcaption></figure>`).join('');
@@ -43,6 +58,8 @@ function photosHTML(list: { src: string; caption: string; tall?: boolean }[]) {
 /** Document body HTML for a skin. Pure string output; the client wires up the interactions. */
 export function renderDocBody(cfg: CaseConfig, doc: { code: string; title: string; md: string }, skinName: string, opened: boolean) {
   let html = renderInner(cfg, doc, skinName, opened);
+  const marks = cfg.loupe?.[doc.code];
+  if (marks?.length) html = loupeMarks(html, marks);
   const tw = cfg.typewriter?.[doc.code];
   if (tw) html = `<div class="tw tw-${tw}">${tw === 'olympia' ? olympia(html) : html}</div>`;
   const ph = cfg.photos?.[doc.code];

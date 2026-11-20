@@ -354,3 +354,25 @@ export async function deleteNote(slug: string, id: number) {
     : and(eq(schema.docNotes.id, id), eq(schema.docNotes.caseId, c.id), eq(schema.docNotes.readerId, rid)));
   return { ok: true };
 }
+
+/* ------------------------------------------------------------------ */
+/* Loupe finds                                                          */
+/* ------------------------------------------------------------------ */
+/** The reader's lens rested on something real. Saved once, and pinned to the evidence board as a forensic note. */
+export async function loupeFind(slug: string, code: string, id: string): Promise<{ ok: boolean; first?: boolean; total?: number; found?: number }> {
+  const { c, p, r, room, save, ev } = await ctx(slug);
+  const marks = c.config.loupe?.[code] ?? [];
+  const m = marks.find((x) => x.id === id);
+  if (!m || !r.docOpen(code) || !canRead(room, c, code)) return { ok: false };
+  const key = `${code}:${id}`;
+  const foundNow = (f: Record<string, string>) => marks.filter((x) => f[`${code}:${x.id}`]).length;
+  if (p.data.found?.[key]) return { ok: true, first: false, total: marks.length, found: foundNow(p.data.found) };
+  const found = { ...(p.data.found ?? {}), [key]: new Date().toISOString() };
+  const pins = p.data.pins ?? [];
+  const n = pins.length;
+  const text = `Kaca pembesar: ${m.note}${m.find ? ` (“${m.find}”)` : ''}`.slice(0, 280);
+  const pin = { id: crypto.randomUUID().slice(0, 8), code, text, x: 4 + (n % 2) * 44 + ((n * 7) % 8), y: 3 + Math.floor(n / 2) * 9 + ((n * 5) % 4) };
+  await save({ data: { ...p.data, found, pins: pins.length < 60 ? [...pins, pin] : pins } });
+  await ev('loupe', { code, id });
+  return { ok: true, first: true, total: marks.length, found: foundNow(found) };
+}

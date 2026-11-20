@@ -10,7 +10,7 @@
     "sort": 2
   },
   "config": {
-    "contentVersion": 1,
+    "contentVersion": 2,
     "skins": {
       "0-01": [
         "note",
@@ -679,6 +679,68 @@
         }
       ]
     },
+    "loupe": {
+      "I-05": [
+        {
+          "id": "g1",
+          "find": "tinggal",
+          "note": "Huruf g naik dari garis, kira-kira setengah milimeter."
+        },
+        {
+          "id": "g2",
+          "find": "Agustus",
+          "note": "Huruf g naik lagi. Bukan kebetulan: cacat mesinnya."
+        },
+        {
+          "id": "g3",
+          "find": "pagar",
+          "note": "g naik. Bandingkan dengan \"pagar\" di laporan polisi I-02."
+        },
+        {
+          "id": "g4",
+          "find": "gelap",
+          "note": "g naik, dan lubang e tertutup tinta."
+        },
+        {
+          "id": "e1",
+          "find": "menyebutkan",
+          "note": "Lubang huruf e tertutup tinta. Pitanya jarang dibersihkan."
+        }
+      ],
+      "I-02": [
+        {
+          "id": "g1",
+          "find": "pagar",
+          "note": "Pembanding: huruf g duduk rapi di garis. Ini mesin tik Polsek."
+        }
+      ],
+      "II-05": [
+        {
+          "id": "g1",
+          "find": "Anggara",
+          "note": "g naik, e tertutup tinta: Olympia SM9 milik radio. Sama dengan surat I-05."
+        },
+        {
+          "id": "g2",
+          "find": "gulali",
+          "note": "g naik lagi. Naskah Sasongko, diketik Juli 1982."
+        }
+      ],
+      "IV-05": [
+        {
+          "id": "g1",
+          "find": "dengan",
+          "note": "Mesin lain: g duduk di garis. Surat warga tidak diketik di radio."
+        }
+      ],
+      "I-06": [
+        {
+          "id": "m1",
+          "micro": "Rara Lintang   Rara Lintang   Rara Lintang   Rara Lintang   Rara Lintang   Rara Lintang",
+          "note": "Coretan pensil di halaman belakang rapor, miring ke kiri: tangan kidal. Sama dengan pensil di II-05."
+        }
+      ]
+    },
     "boardLinks": [
       [
         "II-04",
@@ -727,6 +789,14 @@
       [
         "I-05",
         "V-08"
+      ],
+      [
+        "I-05",
+        "II-05"
+      ],
+      [
+        "I-06",
+        "II-03"
       ],
       [
         "V-07",

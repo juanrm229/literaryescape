@@ -16,7 +16,9 @@ import { markRead, setOpened } from '@/app/actions';
 /** The paper itself: server-rendered HTML + the bits you can touch (envelope, photo, map, tapes). */
 const NO_PUZZLES: PuzzleView[] = [];
 
-export function DocReader({ slug, code, skin, html, fresh, onTapeEnd, puzzles = NO_PUZZLES }: { slug: string; code: string; skin: string; html: string; fresh?: boolean; onTapeEnd?: (code: string) => void; puzzles?: PuzzleView[] }) {
+export type LoupeData = { marks: { id: string; note: string }[]; found: string[] };
+
+export function DocReader({ slug, code, skin, html, fresh, onTapeEnd, puzzles = NO_PUZZLES, loupe }: { slug: string; code: string; skin: string; html: string; fresh?: boolean; onTapeEnd?: (code: string) => void; puzzles?: PuzzleView[]; loupe?: LoupeData }) {
   const ref = useRef<HTMLElement>(null);
   const { scroller, toast, sheet } = useUI();
   // tapes that end on the station jingle play it when the transcript runs out
@@ -25,7 +27,6 @@ export function DocReader({ slug, code, skin, html, fresh, onTapeEnd, puzzles = 
     onTapeEnd?.(c);
   }, [onTapeEnd]);
   const tape = useTape(ref, scroller, onEnd);
-  const [typed, setTyped] = useState(false);
   const [fin, setFin] = useState<'off' | 'on' | 'done'>('off');
   // ::fin — when the final line scrolls into view: five piano notes, then black
   useEffect(() => {
@@ -40,7 +41,6 @@ export function DocReader({ slug, code, skin, html, fresh, onTapeEnd, puzzles = 
     io.observe(el);
     return () => io.disconnect();
   }, [html]);
-  useEffect(() => { setTyped(!!ref.current?.querySelector('.tw')); }, [html]);
   // locks embedded in the paper with ::puzzle[key] — mounted into their slots after render
   const [slots, setSlots] = useState<{ el: Element; view: PuzzleView }[]>([]);
   useEffect(() => {
@@ -114,7 +114,7 @@ export function DocReader({ slug, code, skin, html, fresh, onTapeEnd, puzzles = 
       <article ref={ref} className={`doc skin-${skin}`} data-doc={code} onClick={onClick} onKeyDown={onKey} dangerouslySetInnerHTML={{ __html: html }} />
       {slots.map((s) => createPortal(<PuzzleCard slug={slug} view={s.view} />, s.el, s.view.key))}
       <PinSelection slug={slug} code={code} article={ref} />
-      {typed && <Loupe article={ref} />}
+      {loupe && <Loupe article={ref} slug={slug} code={code} data={loupe} />}
       </div>
       {fin === 'on' && typeof document !== 'undefined' && document.getElementById('screen') && createPortal(
         <button className="blackout" onClick={() => setFin('done')} aria-label="Tutup"><span>Sampun, sampun, cekap.</span></button>, document.getElementById('screen')!)}

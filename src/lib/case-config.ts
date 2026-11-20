@@ -57,6 +57,11 @@ export type CaseConfig = {
   closeOn?: { puzzle: string };
   /** optional: typed documents. "olympia" = the radio's machine (raised g, ink-filled e); "plain" = any other machine */
   typewriter?: Record<string, 'olympia' | 'plain'>;
+  /**
+   * optional: things only the loupe reveals, per document. `find` marks the first occurrence of a word in the text;
+   * `micro` adds a line of micro-writing (pencil, too small to read without the lens). Docs with marks get the loupe.
+   */
+  loupe?: Record<string, { id: string; find?: string; micro?: string; note: string }[]>;
   /** optional: archival photos printed above a document (src under /public) */
   photos?: Record<string, { src: string; caption: string; tall?: boolean }[]>;
   /** optional: evidence-board strings between these documents glow (pairs of doc codes) */

@@ -135,7 +135,8 @@ Other knobs used by Episode 41:
 
 | Key | What it does |
 | --- | --- |
-| `typewriter` | `{ "I-05": "olympia", "I-02": "plain" }`. Typed look + a **Kaca pembesar** button. `olympia` lifts every lowercase *g* and clogs every *e*, only visible under the loupe. |
+| `typewriter` | `{ "I-05": "olympia", "I-02": "plain" }`. Typed look. `olympia` lifts every lowercase *g* and clogs every *e*, only visible under the loupe. |
+| `loupe` | `{ "I-05": [{ "id": "g1", "find": "tinggal", "note": "Huruf g naik…" }], "I-06": [{ "id": "m1", "micro": "Rara Lintang …", "note": "…" }] }`. Only documents listed here get the **Kaca pembesar**. `find` marks the first occurrence of a word; `micro` adds pencil micro-writing readable only through the lens. Each find shows a caption, counts (2/5), is saved, and is pinned to the evidence board. Give every loupe document something to find, and a control document to compare against. |
 | `photos` | `{ "I-02": [{ "src": "/cases/case-02/P05.webp", "caption": "…", "tall": false }] }` printed above the document; tap to enlarge. Put files in `public/cases/<slug>/`. |
 | `boardLinks` | `[["I-05","II-10"], …]` pairs of documents. A red string between quotes from such a pair glows. |
 | `questions` + `desk` | Puzzle keys shown in **Desk ▸ Pertanyaan**; `desk` lists which Desk tabs appear (`prep, tasks, tanya, papan, board, pasaran, notes`). |
